@@ -35,7 +35,7 @@ function parseAtomEntry(entry) {
     const updated = new Date(entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue);
     const published = new Date(entry.getElementsByTagName('published')[0].childNodes[0].nodeValue);
     const title = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
-    const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, '').trim();
+    const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
     const commentNode = entry.getElementsByTagName('arxiv:comment');
     const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue : '';
     const category = entry.getElementsByTagName('category')[0].getAttribute('term');

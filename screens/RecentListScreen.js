@@ -3,7 +3,6 @@ import {
     SectionList,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ActivityIndicator,
 } from 'react-native';
@@ -13,39 +12,27 @@ import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
 
-function extractIDs(list) {
-    if (list) {
-        return list.map(item => item.id);
-    } else {
-        return [];
-    }
-}
-
 export default class RecentListScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        return {
-            title: navigation.getParam('category', 'Unkown'),
-        };
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: navigation.getParam('category', 'Unkown'),
+    });
 
     constructor(props) {
         super(props);
         this.state = { sections: [], numLoaded: 0, loaded: false };
     }
 
-    insertEmptyPlaceHolder(list) {
-        return (list.length > 0) ? list : [{}];
-    }
-
     fetchMorePapers() {
         Arxiv.fetchRecent(this.props.navigation.getParam('category'), this.state.numLoaded, 25)
-            .then(result => {
+            .then((result) => {
                 const papers = groupBy(result, p => p.updated.toISOString().slice(0, 10));
-                const newSections = Object.keys(papers).map(k => { return { title: k, data: papers[k] }; });
+                const newSections = Object.keys(papers).map(k => (
+                    { title: k, data: papers[k] }
+                ));
 
-                let sections = this.state.sections;
+                let { sections } = this.state;
 
-                newSections.forEach(entry => {
+                newSections.forEach((entry) => {
                     const index = sections.findIndex(oldEntry => oldEntry.title === entry.title);
                     if (index >= 0) {
                         sections[index].data = sections[index].data.concat(entry.data);
@@ -56,7 +43,7 @@ export default class RecentListScreen extends React.Component {
 
                 const numLoaded = this.state.numLoaded + result.length;
 
-                this.setState({ sections: sections, loaded: true, numLoaded });
+                this.setState({ sections, loaded: true, numLoaded });
             });
     }
 
@@ -65,7 +52,6 @@ export default class RecentListScreen extends React.Component {
     }
 
     render() {
-        const { navigation } = this.props;
         if (this.state.loaded) {
             return (
                 <View style={styles.container}>
@@ -83,6 +69,7 @@ export default class RecentListScreen extends React.Component {
                         }}
 
                         renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+
                         keyExtractor={(item, index) => index}
 
                         onEndReached={() => this.fetchMorePapers()}
@@ -93,7 +80,7 @@ export default class RecentListScreen extends React.Component {
             );
         } else {
             return (
-                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around', }]}>
+                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around' }]}>
                     <ActivityIndicator size="large" />
                 </View>
             );
@@ -115,6 +102,6 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         fontSize: 18,
         fontWeight: 'bold',
-        backgroundColor: "#ccc",
+        backgroundColor: '#ccc',
     },
 });

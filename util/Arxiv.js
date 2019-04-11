@@ -3,7 +3,7 @@ import { DOMParser } from 'xmldom';
 import ArxivCategories from '../data/Categories.json';
 
 function compareCategories(mainCategory, category) {
-    const regex = new RegExp('^' + mainCategory + '(\.[a-zA-Z-]+)?$');
+    const regex = new RegExp(`^${mainCategory}(\\.[a-zA-Z-]+)?$`);
     return regex.test(category);
 }
 
@@ -16,8 +16,8 @@ function parseRSSItemId(item, mainCategory) {
         const id = matches[1];
         const category = matches[2];
         const info = matches[3];
-        let section = "";
-        if (info === "UPDATED") {
+        let section = '';
+        if (info === 'UPDATED') {
             section = 'updated';
         } else if (compareCategories(mainCategory, category)) {
             section = 'new';
@@ -68,13 +68,12 @@ function parseAtom(response) {
     return papers;
 }
 
-const categories = ArxivCategories.map((sect) => {
-    return {
+const categories = ArxivCategories.map(sect => (
+    {
         title: sect.section,
-        data: sect.categories.map((cat) => { return { text: `${cat.name} [${cat.category}]`, category: cat.category, name: cat.name }; }),
-    };
-});
-
+        data: sect.categories.map(cat => ({ text: `${cat.name} [${cat.category}]`, category: cat.category, name: cat.name })),
+    }
+));
 
 export default class Arxiv {
     static get categories() {
@@ -84,10 +83,8 @@ export default class Arxiv {
     static fetchNew(category) {
         const url = `http://export.arxiv.org/rss/${category}`;
         return fetch(url)
-            .then((response) => response.text())
-            .then((response) => {
-                return parseRSS(response, category);
-            })
+            .then(response => response.text())
+            .then(response => parseRSS(response, category))
             .catch((error) => {
                 console.error(error);
             });
@@ -95,11 +92,11 @@ export default class Arxiv {
 
     static fetchRecent(category, start = 0, max = 25) {
         const query = `search_query=${category}&sortBy=submittedDate&sortOrder=descending&max_results=${max}&start=${start}`;
-        const url = 'https://export.arxiv.org/api/query?' + query;
+        const url = `https://export.arxiv.org/api/query?${query}`;
         console.log(url);
         return fetch(url)
-            .then((response) => response.text())
-            .then((response) => parseAtom(response))
+            .then(response => response.text())
+            .then(response => parseAtom(response))
             .catch((error) => {
                 console.error(error);
             });
@@ -110,8 +107,8 @@ export default class Arxiv {
             const url = `https://export.arxiv.org/api/query?id_list=${ids.join(',')}&start=0&max_results=${ids.length}`;
             console.log(url);
             return fetch(url)
-                .then((response) => response.text())
-                .then((response) => parseAtom(response))
+                .then(response => response.text())
+                .then(response => parseAtom(response))
                 .catch((error) => {
                     console.error(error);
                 });
@@ -119,4 +116,4 @@ export default class Arxiv {
             return Promise.resolve([]);
         }
     }
-};
+}

@@ -15,7 +15,7 @@ class ArxivCategoryItem extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={() => this.props.onPress(this.props.item)}>
-                <View style={{ backgroundColor: this.props.index % 2 == 1 ? "#eee" : "#fff", paddingLeft: (this.props.item.category.indexOf('.') > 0) ? 8 : 0 }} >
+                <View style={{ backgroundColor: this.props.index % 2 === 1 ? '#eee' : '#fff', paddingLeft: (this.props.item.category.indexOf('.') > 0) ? 8 : 0 }} >
                     <View><Text style={styles.itemCategory}>{this.props.item.category}</Text></View>
                     <View><Text style={styles.itemName}>{this.props.item.name}</Text></View>
                 </View>
@@ -31,10 +31,6 @@ export default class ArxivCategoryList extends React.Component {
         const sections = Arxiv.categories;
 
         this.state = { sections };
-    }
-
-    formatLine(cat) {
-        return cat.category ? `${cat.name} [${cat.category}]` : cat.name;
     }
 
     render() {

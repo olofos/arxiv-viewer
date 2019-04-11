@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     StyleSheet,
-    Text,
     View,
 } from 'react-native';
 
@@ -14,7 +13,7 @@ export default class RecentCategoryListScreen extends React.Component {
 
     goToCategory(cat) {
         console.log(`Going to category ${cat.category}`);
-        if(cat.category) {
+        if (cat.category) {
             this.props.navigation.navigate('List', cat);
         }
     }
@@ -23,7 +22,7 @@ export default class RecentCategoryListScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-              <ArxivCategoryList navigation={this.props.navigation} onPress={(item) => this.goToCategory(item)}/>
+                <ArxivCategoryList navigation={this.props.navigation} onPress={item => this.goToCategory(item)} />
             </View>
         );
     }

@@ -22,17 +22,17 @@ const NewStack = createStackNavigator({
     Paper: PaperScreen,
     PDF: PDFScreen,
 }, {
-        initialRouteName: 'CategoryList',
-        navigationOptions: {
-            headerStyle: {
-                backgroundColor: Colors.tintColor,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
+    initialRouteName: 'CategoryList',
+    navigationOptions: {
+        headerStyle: {
+            backgroundColor: Colors.tintColor,
         },
-    });
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+    },
+});
 
 NewStack.navigationOptions = ({ navigation }) => {
     let tabBarVisible = true;
@@ -43,6 +43,7 @@ NewStack.navigationOptions = ({ navigation }) => {
     return {
         tabBarVisible,
         tabBarLabel: 'New',
+        // eslint-disable-next-line react/display-name
         tabBarIcon: ({ focused }) => (
             <TabBarIcon
                 focused={focused}
@@ -62,17 +63,17 @@ const RecentStack = createStackNavigator({
     Paper: PaperScreen,
     PDF: PDFScreen,
 }, {
-        initialRouteName: 'CategoryList',
-        navigationOptions: {
-            headerStyle: {
-                backgroundColor: Colors.tintColor,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
+    initialRouteName: 'CategoryList',
+    navigationOptions: {
+        headerStyle: {
+            backgroundColor: Colors.tintColor,
         },
-    });
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+    },
+});
 
 RecentStack.navigationOptions = ({ navigation }) => {
     let tabBarVisible = true;
@@ -83,6 +84,7 @@ RecentStack.navigationOptions = ({ navigation }) => {
     return {
         tabBarVisible,
         tabBarLabel: 'Recent',
+        // eslint-disable-next-line react/display-name
         tabBarIcon: ({ focused }) => (
             <TabBarIcon
                 focused={focused}
@@ -102,6 +104,7 @@ const SettingsStack = createStackNavigator({
 
 SettingsStack.navigationOptions = {
     tabBarLabel: 'Settings',
+    // eslint-disable-next-line react/display-name
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
@@ -115,7 +118,7 @@ export default createBottomTabNavigator({
     RecentStack,
     SettingsStack,
 }, {
-        tabBarOptions: {
-            activeTintColor: '#00b386'
-        }
-    });
+    tabBarOptions: {
+        activeTintColor: '#00b386',
+    },
+});

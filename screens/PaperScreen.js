@@ -1,48 +1,38 @@
 import React from 'react';
 import {
-    Image,
-    Platform,
     ScrollView,
-    SectionList,
     FlatList,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
-    Button,
-    ActivityIndicator,
 } from 'react-native';
-import { WebBrowser } from 'expo';
 
 import MathJax from 'react-native-mathjax';
 
 export default class PaperScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        return {
+    static navigationOptions = ({ navigation }) => (
+        {
             title: `${navigation.getParam('id', '????.?????')} [${navigation.getParam('category')}]`,
             headerRight: (
                 <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
-                    <Text style={{ marginRight: 14, color: "#fff" }}>PDF</Text>
+                    <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
                 </TouchableOpacity>
             ),
-        };
-    };
-
-    constructor(props) {
-        super(props);
-    }
+        }
+    );
 
     render() {
         const item = this.props.navigation.state.params;
-        const { navigation } = this.props;
+        console.log(item.summary);
         return (
             <ScrollView style={styles.paperContainer}>
                 <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
                 <FlatList
                     style={[styles.box, { flex: 1 }]}
                     data={item.authors}
-                    renderItem={(it) => <Text>{it.item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={it => <Text>{it.item}</Text>}
+                    keyExtractor={(it, index) => index.toString()}
                 />
                 <View style={[styles.box, { paddingLeft: 4 }]}>
                     <MathJax
@@ -59,8 +49,8 @@ export default class PaperScreen extends React.Component {
                                 processEscapes: true,
                             },
                             TeX: {
-                                extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js']
-                            }
+                                extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js'],
+                            },
                         }}
                         style={{ paddingLeft: 0, margin: 0 }}
                     />
@@ -110,7 +100,7 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         fontSize: 18,
         fontWeight: 'bold',
-        backgroundColor: "#ccc",
+        backgroundColor: '#ccc',
     },
     item: {
         paddingTop: 2,

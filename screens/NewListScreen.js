@@ -3,7 +3,6 @@ import {
     SectionList,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ActivityIndicator,
 } from 'react-native';
@@ -28,6 +27,10 @@ const CustomHeader = ({ title, subtitle }) => (
     </View>
 );
 
+function insertEmptyPlaceHolder(list) {
+    return (list.length > 0) ? list : [{}];
+}
+
 export default class NewListScreen extends React.Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: <CustomHeader title={navigation.getParam('category', 'Unkown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
@@ -36,46 +39,41 @@ export default class NewListScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = { newPapers: [], updatedPapers: [], crossListedPapers: [], loaded: false };
-        this._isMounted = false;
-    }
-
-
-    insertEmptyPlaceHolder(list) {
-        return (list.length > 0) ? list : [{}];
+        this.screenIsMounted = false;
     }
 
     componentDidMount() {
-        this._isMounted = true;
+        this.screenIsMounted = true;
         Arxiv.fetchNew(this.props.navigation.getParam('category'))
-            .then((result) => {
-                const papers = groupBy(result, 'section');
+            .then((resultPapers) => {
+                const papers = groupBy(resultPapers, 'section');
 
                 const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
-                    .then(result => this.insertEmptyPlaceHolder(result))
+                    .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this._isMounted) {
+                        if (this.screenIsMounted) {
                             this.setState({ newPapers: result });
                         }
                     });
 
                 const promiseUpdated = Arxiv.fetchPapersById(extractIDs(papers.updated))
-                    .then(result => this.insertEmptyPlaceHolder(result))
+                    .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this._isMounted) {
+                        if (this.screenIsMounted) {
                             this.setState({ updatedPapers: result });
                         }
                     });
 
                 const promiseCrossListed = Arxiv.fetchPapersById(extractIDs(papers.crossListed))
-                    .then(result => this.insertEmptyPlaceHolder(result))
+                    .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this._isMounted) {
+                        if (this.screenIsMounted) {
                             this.setState({ crossListedPapers: result });
                         }
                     });
 
                 Promise.all([promiseNew, promiseUpdated, promiseCrossListed]).then(() => {
-                    if (this._isMounted) {
+                    if (this.screenIsMounted) {
                         this.setState({ loaded: true });
                     }
                 });
@@ -83,11 +81,10 @@ export default class NewListScreen extends React.Component {
     }
 
     componentWillUnmount() {
-        this._isMounted = false;
+        this.screenIsMounted = false;
     }
 
     render() {
-        const { navigation } = this.props;
         if (this.state.loaded) {
             return (
                 <View style={styles.container}>
@@ -106,7 +103,7 @@ export default class NewListScreen extends React.Component {
 
                         renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                         keyExtractor={(item, index) => index}
-                        onViewableItemsChanged={(data) => this.onCheckViewableItems(data)}
+                        onViewableItemsChanged={data => this.onCheckViewableItems(data)}
                         viewabilityConfig={{
                             itemVisiblePercentThreshold: 50,
                             waitForInteraction: false,
@@ -116,14 +113,14 @@ export default class NewListScreen extends React.Component {
             );
         } else {
             return (
-                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around', }]}>
+                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around' }]}>
                     <ActivityIndicator size="large" />
                 </View>
             );
         }
     }
 
-    onCheckViewableItems = ({ viewableItems, changed }) => {
+    onCheckViewableItems = ({ viewableItems }) => {
         if (viewableItems.length > 0) {
             const section = viewableItems[0].section.title.toLowerCase();
             let number = viewableItems[0].section.data.length;
@@ -135,8 +132,8 @@ export default class NewListScreen extends React.Component {
             const { setParams } = this.props.navigation;
 
             setParams({
-                activeSection: `Showing ${number} ${section} ${number === 1 ? 'paper' : 'papers'}`
-            })
+                activeSection: `Showing ${number} ${section} ${number === 1 ? 'paper' : 'papers'}`,
+            });
         }
     }
 }
@@ -166,7 +163,6 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         fontSize: 18,
         fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-        backgroundColor: "#ccc",
+        backgroundColor: '#ccc',
     },
 });

@@ -1,12 +1,9 @@
 import React from 'react';
 import {
-    SectionList,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
-    ActivityIndicator,
-    WebView,
 } from 'react-native';
 
 
@@ -14,13 +11,13 @@ export default class ArxivPaperBrief extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={() => this.props.onPress()}>
-              <View style={[styles.paperContainer,{backgroundColor: this.props.index % 2 == 0 ? "#fff" : "#eee"}]}>
-                <Text style={styles.paperTitle}>{this.props.item.title}</Text>
-                <Text>ArXiv:{this.props.item.id} [{this.props.item.category}]</Text>
-                <Text>{this.props.item.authors.join(', ')}</Text>
-                {this.props.item.comment ? <Text style={styles.paperComment}>Comment: {this.props.item.comment}</Text> : null}
-                <Text style={styles.paperSummary} numberOfLines={8}>{this.props.item.summary}</Text>
-              </View>
+                <View style={[styles.paperContainer, { backgroundColor: this.props.index % 2 === 0 ? '#fff' : '#eee' }]}>
+                    <Text style={styles.paperTitle}>{this.props.item.title}</Text>
+                    <Text>ArXiv:{this.props.item.id} [{this.props.item.category}]</Text>
+                    <Text>{this.props.item.authors.join(', ')}</Text>
+                    {this.props.item.comment ? <Text style={styles.paperComment}>Comment: {this.props.item.comment}</Text> : null}
+                    <Text style={styles.paperSummary} numberOfLines={8}>{this.props.item.summary}</Text>
+                </View>
             </TouchableOpacity>
         );
     }

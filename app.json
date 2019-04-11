@@ -24,6 +24,7 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "View new and recent papers from arXiv"
   }
 }

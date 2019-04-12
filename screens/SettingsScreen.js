@@ -159,13 +159,22 @@ export default class SettingsScreen extends React.Component {
         super(props);
         this.state = { loaded: false, config: null, modalVisible: false };
         this.categories = ['none'].concat(...Arxiv.categories.map(sect => sect.data.map(cat => cat.category)));
+
+        this.defaultConfig = { defaultCategory: null, useMathJax: true };
     }
 
     componentDidMount() {
         AsyncStorage.getItem('config')
             .then(JSON.parse)
             .then((config) => {
-                this.setState({ config, loaded: true });
+                if (config) {
+                    this.setState({ config, loaded: true });
+                } else {
+                    this.updateConfig(this.defaultConfig)
+                        .then(() => {
+                            this.setState({ config: this.defaultConfig, loaded: true });
+                        });
+                }
             });
     }
 

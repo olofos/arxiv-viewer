@@ -49,20 +49,16 @@ class SettingSwitch extends React.Component {
 class SettingTouchable extends React.Component {
     render() {
         return (
-            <TouchableHighlight onPress={() => this.props.onPress()}>
+            <TouchableHighlight onPress={() => this.props.onPress()} underlayColor='#b2dfdc'>
                 <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
-                    <Text style={{
-                        fontSize: 16,
-                        flex: 1,
-                        alignSelf: 'center',
-                    }}>
+                    <Text style={{ fontSize: 16, flex: 1, alignSelf: 'center' }}>
                         {this.props.title}
                     </Text>
 
                     {
                         this.props.subtitle ? (
                             <Text style={{
-                                marginRight: 15,
+                                marginRight: 16,
                                 fontSize: 14,
                                 flex: 0,
                                 alignSelf: 'center',
@@ -81,6 +77,75 @@ class SettingTouchable extends React.Component {
                     }} />
                 </View>
             </TouchableHighlight>
+        );
+    }
+}
+
+class SelectableFlatList extends React.Component {
+    render() {
+        const height = 24;
+        return (
+            <FlatList
+                initialScrollIndex={this.props.selectedItem ? this.props.data.findIndex(el => el === this.props.selectedItem) : 0}
+                getItemLayout={(data, index) => ({ length: height, offset: height * index, index })}
+                data={this.props.data}
+                keyExtractor={item => item}
+                renderItem={({ item }) => {
+                    const selected = item === this.props.selectedItem;
+                    return (
+                        <TouchableHighlight
+                            underlayColor='#b2dfdc'
+                            style={{ height }}
+                            onPress={() => this.props.onPress(item)}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ width: 24 }}>
+                                    {selected ? <Icon name='check' type='material' size={18} /> : null}
+                                </View>
+                                <Text style={{ fontSize: 16, paddingBottom: 2, paddingTop: 2, flex: 1 }}>
+                                    {item}
+                                </Text>
+                            </View>
+                        </TouchableHighlight>
+                    );
+                }}>
+            </FlatList >
+        );
+    }
+}
+
+class SelectableFlatListModal extends React.Component {
+    render() {
+        return (
+            <Modal
+                animationType={'slide'}
+                transparent={true}
+                visible={this.props.visible}
+                onRequestClose={() => this.props.onRequestClose()}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    < View style={{ marginBottom: 48, marginTop: 48, marginLeft: 24, marginRight: 24, padding: 4, flex: 1, backgroundColor: '#fff' }}>
+                        <View>
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderBottomWidth: 1,
+                                paddingBottom: 4,
+                                paddingTop: 4,
+                            }}>
+                                <View style={{ width: 24 }}></View>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', flex: 1 }}>
+                                    {this.props.title}
+                                </Text>
+                            </View>
+
+                            <SelectableFlatList
+                                data={this.props.data}
+                                selectedItem={this.props.selectedItem}
+                                onPress={item => this.props.onSelect(item)}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         );
     }
 }
@@ -115,69 +180,23 @@ export default class SettingsScreen extends React.Component {
             const { config } = this.state;
             return (
                 <View style={styles.container}>
-                    <Modal
-                        animationType={'slide'}
-                        transparent={true}
+                    <SelectableFlatListModal
                         visible={this.state.modalVisible}
-                        onRequestClose={() => this.setModalVisible(false)}>
-                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                            < View style={{ marginBottom: 48, marginTop: 48, marginLeft: 24, marginRight: 24, padding: 4, flex: 1, backgroundColor: '#fff' }}>
-                                <View>
-                                    <View style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        borderBottomWidth: 1,
-                                        paddingBottom: 4,
-                                        paddingTop: 4,
-                                    }}>
-                                        <View style={{ width: 24 }}></View>
-                                        <Text style={{
-                                            fontSize: 20,
-                                            fontWeight: 'bold',
-                                            flex: 1,
-                                        }}>Default Category</Text>
-                                    </View>
-                                    <FlatList
-                                        initialScrollIndex={
-                                            config.defaultCategory ? this.categories.findIndex(el => el === config.defaultCategory) : 0
-                                        }
-                                        getItemLayout={(data, index) => ({ length: 24, offset: 24 * index, index })}
-                                        data={this.categories}
-                                        keyExtractor={item => item}
-                                        renderItem={({ item }) => {
-                                            const selected = (item === config.defaultCategory) || (!config.defaultCategory && item === 'none');
-                                            return (
-                                                <TouchableHighlight
-                                                    style={{ height: 24 }}
-                                                    onPress={() => {
-                                                        const conf = this.state.config;
-                                                        if (item === 'none') {
-                                                            conf.defaultCategory = undefined;
-                                                        } else {
-                                                            conf.defaultCategory = item;
-                                                        }
-                                                        this.updateConfig(conf)
-                                                            .then(() => this.setModalVisible(false));
-                                                    }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <View style={{ width: 24 }}>
-                                                            {selected ? <Icon name='check' type='material' size={18} /> : null}
-                                                        </View>
-                                                        <Text style={{
-                                                            fontSize: 16,
-                                                            paddingBottom: 2,
-                                                            paddingTop: 2,
-                                                            flex: 1,
-                                                        }}>{item}</Text>
-                                                    </View>
-                                                </TouchableHighlight>
-                                            );
-                                        }}>
-                                    </FlatList>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                        title='Default Category'
+                        data={this.categories}
+                        selectedItem={config.defaultCategory || 'none'}
+                        onRequestClose={() => this.setModalVisible(false)}
+                        onSelect={(item) => {
+                            const conf = this.state.config;
+                            if (item === 'none') {
+                                conf.defaultCategory = undefined;
+                            } else {
+                                conf.defaultCategory = item;
+                            }
+                            this.updateConfig(conf)
+                                .then(() => this.setModalVisible(false));
+                        }}
+                    />
 
                     <SettingsGroup>
                         <SettingSwitch

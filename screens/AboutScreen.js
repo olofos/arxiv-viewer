@@ -5,6 +5,8 @@ import {
     Text,
 } from 'react-native';
 
+import { expo } from '../app.json';
+
 export default class AboutScreen extends React.Component {
     static navigationOptions = {
         title: 'About',
@@ -13,9 +15,10 @@ export default class AboutScreen extends React.Component {
     // eslint-disable-next-line class-methods-use-this
     render() {
         return (
-            <View>
+            <View style={{ margin: 24 }}>
                 <Text>ArXiv Viewer</Text>
-                <Text>(c) 2019 Olof Ohlsson Sax</Text>
+                <Text>Version {expo.version}</Text>
+                <Text>{'\u00A9'} 2019 Olof Ohlsson Sax</Text>
             </View>
         );
     }

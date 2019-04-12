@@ -7,12 +7,83 @@ import {
     Switch,
     Text,
     Modal,
+    Linking,
     AsyncStorage,
 } from 'react-native';
 
 import { Icon } from 'react-native-elements';
 
 import Arxiv from '../util/Arxiv';
+
+class SettingsGroup extends React.Component {
+    render() {
+        return (
+            <View style={[{ marginTop: 16, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1 }, this.props.style]}>
+                {this.props.children}
+            </View>
+        );
+    }
+}
+
+class SettingSwitch extends React.Component {
+    render() {
+        return (
+            <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
+                <Text style={{
+                    fontSize: 16,
+                    flex: 1,
+                    alignSelf: 'center',
+                }}>
+                    {this.props.title}
+                </Text>
+                <Switch
+                    style={{ marginRight: 15, flex: 1, justifyContent: 'center' }}
+                    value={this.props.value}
+                    onValueChange={value => this.props.onValueChange(value)} />
+
+            </View>
+        );
+    }
+}
+
+class SettingTouchable extends React.Component {
+    render() {
+        return (
+            <TouchableHighlight onPress={() => this.props.onPress()}>
+                <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
+                    <Text style={{
+                        fontSize: 16,
+                        flex: 1,
+                        alignSelf: 'center',
+                    }}>
+                        {this.props.title}
+                    </Text>
+
+                    {
+                        this.props.subtitle ? (
+                            <Text style={{
+                                marginRight: 15,
+                                fontSize: 14,
+                                flex: 0,
+                                alignSelf: 'center',
+                                textAlign: 'right',
+                                color: '#aaa',
+                            }}>
+                                {this.props.subtitle}
+                            </Text>
+                        ) : null
+                    }
+
+                    <Icon type='material' name='chevron-right' color='#aaa' containerStyle={{
+                        flex: 0,
+                        marginRight: 15,
+                        alignSelf: 'center',
+                    }} />
+                </View>
+            </TouchableHighlight>
+        );
+    }
+}
 
 export default class SettingsScreen extends React.Component {
     static navigationOptions = {
@@ -107,72 +178,34 @@ export default class SettingsScreen extends React.Component {
                             </View>
                         </View>
                     </Modal>
-                    <View style={{ marginTop: 15, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1 }}>
-                        <View style={{ marginLeft: 15, height: 50, flexDirection: 'row', justifyContent: 'center', borderBottomWidth: 1 }}>
-                            <Text style={{
-                                fontSize: 16,
-                                flex: 1,
-                                alignSelf: 'center',
-                            }}>Use MathJax</Text>
-                            <Switch
-                                style={{ marginRight: 15, flex: 1, justifyContent: 'center' }}
-                                value={config.useMathJax}
-                                onValueChange={value => this.onUseMathJaxChange(value)} />
-                        </View>
 
-                        <TouchableHighlight
-                            onPress={() => {
-                                this.setModalVisible(true);
-                            }}>
-                            <View style={{ marginLeft: 15, height: 50, flexDirection: 'row', justifyContent: 'center' }}>
-                                <Text style={{
-                                    fontSize: 16,
-                                    flex: 0,
-                                    alignSelf: 'center',
-                                }}>
-                                    Default Category
-                                </Text>
+                    <SettingsGroup>
+                        <SettingSwitch
+                            onValueChange={value => this.onUseMathJaxChange(value)}
+                            value={config.useMathJax}
+                            title='Use MathJax'
+                            style={{ borderBottomWidth: 1 }}
+                        />
 
-                                <Text style={{
-                                    marginRight: 15,
-                                    fontSize: 14,
-                                    flex: 1,
-                                    alignSelf: 'center',
-                                    textAlign: 'right',
-                                    color: '#aaa',
-                                }}>
-                                    {config.defaultCategory || 'none'}
-                                </Text>
+                        <SettingTouchable
+                            onPress={() => this.setModalVisible(true)}
+                            title='Default Category'
+                            subtitle={config.defaultCategory || 'none'} />
+                    </SettingsGroup>
 
-                                <Icon type='material' name='chevron-right' color='#aaa' containerStyle={{
-                                    flex: 0,
-                                    marginRight: 15,
-                                    alignSelf: 'center',
-                                }} />
-                            </View>
-                        </TouchableHighlight>
-                    </View>
+                    <SettingsGroup>
+                        <SettingTouchable
+                            onPress={() => Linking.openURL('https://arxiv.org')}
+                            title='Go to arxiv.org' />
+                    </SettingsGroup>
 
                     <View style={{ flex: 1 }}></View>
 
-                    <View style={{ marginBottom: 15, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1, flex: 0 }}>
-                        <TouchableHighlight onPress={() => this.props.navigation.navigate('About')}>
-                            <View style={{ marginLeft: 15, height: 50, flexDirection: 'row', justifyContent: 'center' }}>
-                                <Text style={{
-                                    fontSize: 16,
-                                    flex: 1,
-                                    alignSelf: 'center',
-                                }}>
-                                    About
-                                </Text>
-                                <Icon type='material' name='chevron-right' color='#aaa' containerStyle={{
-                                    flex: 0,
-                                    marginRight: 15,
-                                    alignSelf: 'center',
-                                }} />
-                            </View>
-                        </TouchableHighlight>
-                    </View>
+                    <SettingsGroup style={{ marginBottom: 16 }}>
+                        <SettingTouchable
+                            onPress={() => this.props.navigation.navigate('About')}
+                            title='About' />
+                    </SettingsGroup>
                 </View >
             );
         }

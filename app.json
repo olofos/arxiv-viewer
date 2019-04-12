@@ -25,6 +25,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": "View new and recent papers from arXiv"
+    "description": "View new and recent papers from arXiv",
+    "githubUrl": "https://github.com/olofos/arxiv-viewer.git"
   }
 }

@@ -6,38 +6,22 @@ import {
     Text,
     TouchableOpacity,
     View,
+    AsyncStorage,
 } from 'react-native';
 
 import MathJax from 'react-native-mathjax';
 
-export default class PaperScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => (
-        {
-            title: `${navigation.getParam('id', '????.?????')} [${navigation.getParam('category')}]`,
-            headerRight: (
-                <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
-                    <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
-                </TouchableOpacity>
-            ),
-        }
-    );
-
+class PaperSummary extends React.Component {
     render() {
-        const item = this.props.navigation.state.params;
-        console.log(item.summary);
-        return (
-            <ScrollView style={styles.paperContainer}>
-                <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
-                <FlatList
-                    style={[styles.box, { flex: 1 }]}
-                    data={item.authors}
-                    renderItem={it => <Text>{it.item}</Text>}
-                    keyExtractor={(it, index) => index.toString()}
-                />
+        const { useMathJax, summary } = this.props;
+        if (!useMathJax) {
+            return <Text style={[styles.box, styles.paperSummary]}>{summary}</Text>;
+        } else {
+            return (
                 <View style={[styles.box, { paddingLeft: 4 }]}>
                     <MathJax
                         // HTML content with MathJax support
-                        html={(`<p style="font-size:12pt;padding:0px;margin:0px">${item.summary}</p>`)}
+                        html={(`<p style="font-size:12pt;padding:0px;margin:0px">${summary}</p>`)}
                         // MathJax config option
                         mathJaxOptions={{
                             messageStyle: 'none',
@@ -55,8 +39,58 @@ export default class PaperScreen extends React.Component {
                         style={{ paddingLeft: 0, margin: 0 }}
                     />
                 </View>
-                {item.comment ? <Text style={[styles.box, styles.paperComment]}>Comment: {item.comment}</Text> : null}
-            </ScrollView>
+            );
+        }
+    }
+}
+
+export default class PaperScreen extends React.Component {
+    static navigationOptions = ({ navigation }) => (
+        {
+            title: `${navigation.getParam('id', '????.?????')} [${navigation.getParam('category')}]`,
+            headerRight: (
+                <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
+                    <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
+                </TouchableOpacity>
+            ),
+        }
+    );
+
+    constructor() {
+        super();
+        this.state = { loaded: false, useMathJax: false };
+    }
+
+    componentDidMount() {
+        AsyncStorage.getItem('config')
+            .then(JSON.parse)
+            .then((config) => {
+                this.setState({ useMathJax: config.useMathJax, loaded: true });
+            });
+    }
+
+    render() {
+        const item = this.props.navigation.state.params;
+        console.log(item.summary);
+        if (!this.state.loaded) {
+            return null;
+        }
+        return (
+            <ScrollView style={styles.paperContainer}>
+                <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
+                <FlatList
+                    style={[styles.box, { flex: 1 }]}
+                    data={item.authors}
+                    renderItem={it => <Text>{it.item}</Text>}
+                    keyExtractor={(it, index) => index.toString()}
+                />
+
+                <PaperSummary
+                    useMathJax={this.state.useMathJax}
+                    summary={item.summary}
+                />
+                {item.comment ? <Text style={[styles.box, styles.paperComment]}>Comments: {item.comment}</Text> : null}
+            </ScrollView >
         );
     }
 }
@@ -87,6 +121,7 @@ const styles = StyleSheet.create({
     },
 
     paperSummary: {
+        fontSize: 16,
     },
 
     paperComment: {

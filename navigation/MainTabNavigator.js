@@ -13,26 +13,32 @@ import RecentListScreen from '../screens/RecentListScreen';
 
 import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
+
 import SettingsScreen from '../screens/SettingsScreen';
+import CategorySettingsScreen from '../screens/CategorySettingsScreen';
+import AboutScreen from '../screens/AboutScreen';
 
 
-const NewStack = createStackNavigator({
-    CategoryList: NewCategoryListScreen,
-    List: NewListScreen,
-    Paper: PaperScreen,
-    PDF: PDFScreen,
-}, {
-    initialRouteName: 'CategoryList',
-    navigationOptions: {
-        headerStyle: {
-            backgroundColor: Colors.tintColor,
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
+const NewStack = createStackNavigator(
+    {
+        CategoryList: NewCategoryListScreen,
+        List: NewListScreen,
+        Paper: PaperScreen,
+        PDF: PDFScreen,
+    },
+    {
+        initialRouteName: 'CategoryList',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: Colors.tintColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
         },
     },
-});
+);
 
 NewStack.navigationOptions = ({ navigation }) => {
     let tabBarVisible = true;
@@ -57,23 +63,25 @@ NewStack.navigationOptions = ({ navigation }) => {
     };
 };
 
-const RecentStack = createStackNavigator({
-    CategoryList: RecentCategoryListScreen,
-    List: RecentListScreen,
-    Paper: PaperScreen,
-    PDF: PDFScreen,
-}, {
-    initialRouteName: 'CategoryList',
-    navigationOptions: {
-        headerStyle: {
-            backgroundColor: Colors.tintColor,
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
+const RecentStack = createStackNavigator(
+    {
+        CategoryList: RecentCategoryListScreen,
+        List: RecentListScreen,
+        Paper: PaperScreen,
+        PDF: PDFScreen,
+    }, {
+        initialRouteName: 'CategoryList',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: Colors.tintColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
         },
     },
-});
+);
 
 RecentStack.navigationOptions = ({ navigation }) => {
     let tabBarVisible = true;
@@ -98,9 +106,24 @@ RecentStack.navigationOptions = ({ navigation }) => {
     };
 };
 
-const SettingsStack = createStackNavigator({
-    Settings: SettingsScreen,
-});
+const SettingsStack = createStackNavigator(
+    {
+        Settings: SettingsScreen,
+        CategorySettings: CategorySettingsScreen,
+        About: AboutScreen,
+    }, {
+        initialRouteName: 'Settings',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: Colors.tintColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    },
+);
 
 SettingsStack.navigationOptions = {
     tabBarLabel: 'Settings',
@@ -113,12 +136,15 @@ SettingsStack.navigationOptions = {
     ),
 };
 
-export default createBottomTabNavigator({
-    NewStack,
-    RecentStack,
-    SettingsStack,
-}, {
-    tabBarOptions: {
-        activeTintColor: '#00b386',
+export default createBottomTabNavigator(
+    {
+        NewStack,
+        RecentStack,
+        SettingsStack,
+    }, {
+        initialRouteName: 'NewStack',
+        tabBarOptions: {
+            activeTintColor: '#00b386',
+        },
     },
-});
+);

@@ -10,7 +10,6 @@ import {
 
 import Arxiv from '../util/Arxiv';
 
-
 class ArxivCategoryItem extends React.Component {
     render() {
         return (

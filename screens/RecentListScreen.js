@@ -1,13 +1,10 @@
 import React from 'react';
 import {
-    SectionList,
     StyleSheet,
-    Text,
     View,
-    RefreshControl,
 } from 'react-native';
 
-import ArxivPaperBrief from '../components/ArxivPaperBrief';
+import ArxivPaperList from '../components/ArxivPaperList';
 import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
@@ -55,36 +52,15 @@ export default class RecentListScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <SectionList
+                <ArxivPaperList
                     sections={this.state.sections}
-
-                    renderItem={({ item, index }) => {
-                        if (item.id) {
-                            return (
-                                <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
-                            );
-                        } else {
-                            return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
-                        }
-                    }}
-
-                    renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-
-                    keyExtractor={(item, index) => index}
-
-                    onEndReachedThreshold={1}
                     onEndReached={() => this.fetchMorePapers()}
-
-                    refreshControl={
-                        <RefreshControl
-                            colors={['#00b386']}
-                            refreshing={this.state.fetching}
-                            onRefresh={() => {
-                                this.setState({ sections: [], numLoaded: 0 });
-                                this.fetchMorePapers();
-                            }}
-                        />
-                    }
+                    refreshing={this.state.fetching}
+                    navigation={this.props.navigation}
+                    onRefresh={() => {
+                        this.setState({ sections: [], numLoaded: 0 });
+                        this.fetchMorePapers();
+                    }}
                 />
             </View>
         );

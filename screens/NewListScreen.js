@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-    SectionList,
     StyleSheet,
     Text,
     View,
-    RefreshControl,
 } from 'react-native';
 
-import ArxivPaperBrief from '../components/ArxivPaperBrief';
+import ArxivPaperList from '../components/ArxivPaperList';
 import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
@@ -94,45 +92,22 @@ export default class NewListScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <SectionList
+                <ArxivPaperList
                     sections={this.state.fetching ? [] : [
                         { title: 'New', data: this.state.newPapers },
                         { title: 'Cross Listed', data: this.state.crossListedPapers },
                         { title: 'Updated', data: this.state.updatedPapers },
                     ]}
-
-                    renderItem={({ item, index }) => {
-                        if (item.id) {
-                            return (
-                                <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
-                            );
-                        } else {
-                            return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
-                        }
-                    }}
-
-                    renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                    keyExtractor={(item, index) => index}
-                    onViewableItemsChanged={data => this.onCheckViewableItems(data)}
-                    viewabilityConfig={{
-                        itemVisiblePercentThreshold: 50,
-                        waitForInteraction: false,
-                    }}
-
-                    refreshControl={
-                        <RefreshControl
-                            colors={['#00b386']}
-                            refreshing={this.state.fetching}
-                            onRefresh={() => this.fetchPapers()}
-                        />
-                    }
-
+                    refreshing={this.state.fetching}
+                    navigation={this.props.navigation}
+                    onRefresh={() => this.fetchPapers()}
+                    onViewableItemsChanged={data => this.onViewableItemsChanged(data)}
                 />
             </View>
         );
     }
 
-    onCheckViewableItems = ({ viewableItems }) => {
+    onViewableItemsChanged({ viewableItems }) {
         if (viewableItems.length > 0) {
             const section = viewableItems[0].section.title.toLowerCase();
             let number = viewableItems[0].section.data.length;
@@ -165,16 +140,5 @@ const styles = StyleSheet.create({
     headerSubtitle: {
         fontSize: 12,
         color: '#fff',
-    },
-
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        marginBottom: 2,
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#ccc',
     },
 });

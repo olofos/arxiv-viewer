@@ -15,7 +15,7 @@ export default class ArxivPaperBrief extends React.Component {
                     <Text style={styles.paperTitle}>{this.props.item.title}</Text>
                     <Text>ArXiv:{this.props.item.id} [{this.props.item.category}]</Text>
                     <Text>{this.props.item.authors.join(', ')}</Text>
-                    {this.props.item.comment ? <Text style={styles.paperComment}>Comment: {this.props.item.comment}</Text> : null}
+                    {this.props.item.comment ? <Text style={styles.paperComment}>Comments: {this.props.item.comment}</Text> : null}
                     <Text style={styles.paperSummary} numberOfLines={8}>{this.props.item.summary}</Text>
                 </View>
             </TouchableOpacity>

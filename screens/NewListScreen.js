@@ -4,7 +4,7 @@ import {
     StyleSheet,
     Text,
     View,
-    ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 
 import ArxivPaperBrief from '../components/ArxivPaperBrief';
@@ -33,17 +33,19 @@ function insertEmptyPlaceHolder(list) {
 
 export default class NewListScreen extends React.Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: <CustomHeader title={navigation.getParam('category', 'Unkown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
+        headerTitle: <CustomHeader title={navigation.getParam('category', 'Unknown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
     });
 
     constructor(props) {
         super(props);
-        this.state = { newPapers: [], updatedPapers: [], crossListedPapers: [], loaded: false };
+        this.state = { newPapers: [], updatedPapers: [], crossListedPapers: [], fetching: false };
         this.screenIsMounted = false;
     }
 
-    componentDidMount() {
-        this.screenIsMounted = true;
+    fetchPapers() {
+        this.setState({ fetching: true });
+        this.props.navigation.setParams({ activeSection: 'Loading' });
+
         Arxiv.fetchNew(this.props.navigation.getParam('category'))
             .then((resultPapers) => {
                 const papers = groupBy(resultPapers, 'section');
@@ -74,10 +76,15 @@ export default class NewListScreen extends React.Component {
 
                 Promise.all([promiseNew, promiseUpdated, promiseCrossListed]).then(() => {
                     if (this.screenIsMounted) {
-                        this.setState({ loaded: true });
+                        this.setState({ fetching: false });
                     }
                 });
             });
+    }
+
+    componentDidMount() {
+        this.screenIsMounted = true;
+        this.fetchPapers();
     }
 
     componentWillUnmount() {
@@ -85,39 +92,44 @@ export default class NewListScreen extends React.Component {
     }
 
     render() {
-        if (this.state.loaded) {
-            return (
-                <View style={styles.container}>
-                    <SectionList
-                        sections={[{ title: 'New', data: this.state.newPapers }, { title: 'Cross Listed', data: this.state.crossListedPapers }, { title: 'Updated', data: this.state.updatedPapers }]}
+        return (
+            <View style={styles.container}>
+                <SectionList
+                    sections={this.state.fetching ? [] : [
+                        { title: 'New', data: this.state.newPapers },
+                        { title: 'Cross Listed', data: this.state.crossListedPapers },
+                        { title: 'Updated', data: this.state.updatedPapers },
+                    ]}
 
-                        renderItem={({ item, index }) => {
-                            if (item.id) {
-                                return (
-                                    <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
-                                );
-                            } else {
-                                return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
-                            }
-                        }}
+                    renderItem={({ item, index }) => {
+                        if (item.id) {
+                            return (
+                                <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
+                            );
+                        } else {
+                            return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
+                        }
+                    }}
 
-                        renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                        keyExtractor={(item, index) => index}
-                        onViewableItemsChanged={data => this.onCheckViewableItems(data)}
-                        viewabilityConfig={{
-                            itemVisiblePercentThreshold: 50,
-                            waitForInteraction: false,
-                        }}
-                    />
-                </View>
-            );
-        } else {
-            return (
-                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around' }]}>
-                    <ActivityIndicator size="large" />
-                </View>
-            );
-        }
+                    renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    keyExtractor={(item, index) => index}
+                    onViewableItemsChanged={data => this.onCheckViewableItems(data)}
+                    viewabilityConfig={{
+                        itemVisiblePercentThreshold: 50,
+                        waitForInteraction: false,
+                    }}
+
+                    refreshControl={
+                        <RefreshControl
+                            colors={['#00b386']}
+                            refreshing={this.state.fetching}
+                            onRefresh={() => this.fetchPapers()}
+                        />
+                    }
+
+                />
+            </View>
+        );
     }
 
     onCheckViewableItems = ({ viewableItems }) => {

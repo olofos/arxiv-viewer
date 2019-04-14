@@ -4,7 +4,7 @@ import {
     StyleSheet,
     Text,
     View,
-    ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 
 import ArxivPaperBrief from '../components/ArxivPaperBrief';
@@ -19,10 +19,11 @@ export default class RecentListScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { sections: [], numLoaded: 0, loaded: false };
+        this.state = { sections: [], numLoaded: 0, fetching: false };
     }
 
     fetchMorePapers() {
+        this.setState({ fetching: true });
         Arxiv.fetchRecent(this.props.navigation.getParam('category'), this.state.numLoaded, 25)
             .then((result) => {
                 const papers = groupBy(result, p => p.updated.toISOString().slice(0, 10));
@@ -43,7 +44,7 @@ export default class RecentListScreen extends React.Component {
 
                 const numLoaded = this.state.numLoaded + result.length;
 
-                this.setState({ sections, loaded: true, numLoaded });
+                this.setState({ sections, fetching: false, numLoaded });
             });
     }
 
@@ -52,39 +53,41 @@ export default class RecentListScreen extends React.Component {
     }
 
     render() {
-        if (this.state.loaded) {
-            return (
-                <View style={styles.container}>
-                    <SectionList
-                        sections={this.state.sections}
+        return (
+            <View style={styles.container}>
+                <SectionList
+                    sections={this.state.sections}
 
-                        renderItem={({ item, index }) => {
-                            if (item.id) {
-                                return (
-                                    <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
-                                );
-                            } else {
-                                return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
-                            }
-                        }}
+                    renderItem={({ item, index }) => {
+                        if (item.id) {
+                            return (
+                                <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
+                            );
+                        } else {
+                            return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
+                        }
+                    }}
 
-                        renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
 
-                        keyExtractor={(item, index) => index}
+                    keyExtractor={(item, index) => index}
 
-                        onEndReached={() => this.fetchMorePapers()}
+                    onEndReachedThreshold={1}
+                    onEndReached={() => this.fetchMorePapers()}
 
-                        ListFooterComponent={<ActivityIndicator />}
-                    />
-                </View>
-            );
-        } else {
-            return (
-                <View style={[styles.container, { flexDirection: 'row', justifyContent: 'space-around' }]}>
-                    <ActivityIndicator size="large" />
-                </View>
-            );
-        }
+                    refreshControl={
+                        <RefreshControl
+                            colors={['#00b386']}
+                            refreshing={this.state.fetching}
+                            onRefresh={() => {
+                                this.setState({ sections: [], numLoaded: 0 });
+                                this.fetchMorePapers();
+                            }}
+                        />
+                    }
+                />
+            </View>
+        );
     }
 }
 

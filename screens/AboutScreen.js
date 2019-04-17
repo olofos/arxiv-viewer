@@ -15,10 +15,12 @@ export default class AboutScreen extends React.Component {
     // eslint-disable-next-line class-methods-use-this
     render() {
         return (
-            <View style={{ margin: 24 }}>
-                <Text>ArXiv Viewer</Text>
-                <Text>Version {expo.version}</Text>
-                <Text>{'\u00A9'} 2019 Olof Ohlsson Sax</Text>
+            <View style={{ flex: 1, backgroundColor: '#eee' }}>
+                <View style={{ margin: 24 }}>
+                    <Text>ArXiv Viewer</Text>
+                    <Text>Version {expo.version}</Text>
+                    <Text>{'\u00A9'} 2019 Olof Ohlsson Sax</Text>
+                </View>
             </View>
         );
     }

@@ -12,13 +12,12 @@ import {
 } from 'react-native';
 
 import { Icon } from 'react-native-elements';
-
 import Arxiv from '../util/Arxiv';
 
 class SettingsGroup extends React.Component {
     render() {
         return (
-            <View style={[{ marginTop: 16, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1 }, this.props.style]}>
+            <View style={[{ marginTop: 16, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#999' }, this.props.style]}>
                 {this.props.children}
             </View>
         );
@@ -28,7 +27,7 @@ class SettingsGroup extends React.Component {
 class SettingSwitch extends React.Component {
     render() {
         return (
-            <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
+            <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#999' }, this.props.style]}>
                 <Text style={{
                     fontSize: 16,
                     flex: 1,
@@ -50,7 +49,7 @@ class SettingTouchable extends React.Component {
     render() {
         return (
             <TouchableHighlight onPress={() => this.props.onPress()} underlayColor='#b2dfdc'>
-                <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
+                <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#999' }, this.props.style]}>
                     <Text style={{ fontSize: 16, flex: 1, alignSelf: 'center' }}>
                         {this.props.title}
                     </Text>

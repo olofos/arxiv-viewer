@@ -17,6 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "react-native-elements": "^1.1.0",
     "react-native-mathjax": "^2.0.0",
+    "react-native-section-list-get-item-layout": "^2.2.3",
     "react-navigation": "^2.18.2",
     "xmldom": "^0.1.27"
   },

@@ -15,12 +15,9 @@ export default class NewCategoryListScreen extends React.Component {
     componentDidMount() {
         AsyncStorage.getItem('config')
             .then(config => JSON.parse(config))
-            .then((config) => {
-                const category = config.defaultCategory;
-                if (category) {
-                    this.goToCategory({ category });
-                }
-            });
+            .then(config => config.defaultCategory)
+            .then(category => this.categoryList.scrollToCategory(category))
+            .then(category => this.goToCategory({ category }));
     }
 
     goToCategory(cat) {
@@ -35,7 +32,9 @@ export default class NewCategoryListScreen extends React.Component {
             <View style={styles.container}>
                 <ArxivCategoryList
                     navigation={this.props.navigation}
-                    onPress={item => this.goToCategory(item)} />
+                    onPress={item => this.goToCategory(item)}
+                    ref={(categoryList) => { this.categoryList = categoryList; }}
+                />
             </View>
         );
     }

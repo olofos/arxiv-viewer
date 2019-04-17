@@ -53,14 +53,20 @@ export default class ArxivCategoryList extends React.Component {
     }
 
     scrollToCategory(category) {
-        if (category) {
-            const { sectionIndex, itemIndex } = this.getSectionIndex(category);
+        return new Promise((resolve) => {
+            if (category) {
+                const { sectionIndex, itemIndex } = this.getSectionIndex(category);
 
-            if (itemIndex >= 0) {
-                this.sectionList.scrollToLocation({ sectionIndex, itemIndex, animated: false });
+                if (itemIndex >= 0) {
+                    // Without a timeout the list does not always scroll
+                    setTimeout(() => {
+                        this.sectionList.scrollToLocation({ sectionIndex, itemIndex, animated: false });
+                        resolve(category);
+                    }, 50);
+                }
             }
-        }
-        return category;
+            resolve(category);
+        });
     }
 
     render() {

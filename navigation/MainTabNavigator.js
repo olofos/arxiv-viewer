@@ -55,7 +55,7 @@ NewStack.navigationOptions = ({ navigation }) => {
                 focused={focused}
                 name={
                     Platform.OS === 'ios'
-                        ? `ios-pulse-${focused ? '' : '-outline'}`
+                        ? `ios-pulse${focused ? '' : '-outline'}`
                         : 'md-pulse'
                 }
             />
@@ -98,7 +98,7 @@ RecentStack.navigationOptions = ({ navigation }) => {
                 focused={focused}
                 name={
                     Platform.OS === 'ios'
-                        ? `ios-clock-${focused ? '' : '-outline'}`
+                        ? `ios-clock${focused ? '' : '-outline'}`
                         : 'md-clock'
                 }
             />

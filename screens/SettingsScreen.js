@@ -8,11 +8,11 @@ import {
     Text,
     Modal,
     Linking,
-    AsyncStorage,
 } from 'react-native';
 
 import { Icon } from 'react-native-elements';
 import Arxiv from '../util/Arxiv';
+import Settings from '../util/Settings';
 
 class SettingsGroup extends React.Component {
     render() {
@@ -163,18 +163,8 @@ export default class SettingsScreen extends React.Component {
     }
 
     componentDidMount() {
-        AsyncStorage.getItem('config')
-            .then(JSON.parse)
-            .then((config) => {
-                if (config) {
-                    this.setState({ config, loaded: true });
-                } else {
-                    this.updateConfig(this.defaultConfig)
-                        .then(() => {
-                            this.setState({ config: this.defaultConfig, loaded: true });
-                        });
-                }
-            });
+        Settings.getConfig()
+            .then(config => this.setState({ config, loaded: true }));
     }
 
     setModalVisible(visible) {
@@ -195,20 +185,14 @@ export default class SettingsScreen extends React.Component {
                         selectedItem={config.defaultCategory || 'none'}
                         onRequestClose={() => this.setModalVisible(false)}
                         onSelect={(item) => {
-                            const conf = this.state.config;
-                            if (item === 'none') {
-                                conf.defaultCategory = undefined;
-                            } else {
-                                conf.defaultCategory = item;
-                            }
-                            this.updateConfig(conf)
+                            this.setConfig('defaultCategory', item === 'none' ? undefined : item)
                                 .then(() => this.setModalVisible(false));
                         }}
                     />
 
                     <SettingsGroup>
                         <SettingSwitch
-                            onValueChange={value => this.onUseMathJaxChange(value)}
+                            onValueChange={value => this.setConfig('useMathJax', value)}
                             value={config.useMathJax}
                             title='Use MathJax'
                             style={{ borderBottomWidth: 1 }}
@@ -238,15 +222,9 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
-    updateConfig(config) {
-        return AsyncStorage.setItem('config', JSON.stringify(config))
-            .then(() => this.setState({ config }));
-    }
-
-    onUseMathJaxChange(value) {
-        const { config } = this.state;
-        config.useMathJax = value;
-        this.updateConfig(config);
+    setConfig(key, value) {
+        return Settings.setConfig(key, value)
+            .then(newConfig => this.setState({ config: newConfig }));
     }
 }
 

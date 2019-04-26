@@ -15,7 +15,6 @@ import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
 
 import SettingsScreen from '../screens/SettingsScreen';
-import CategorySettingsScreen from '../screens/CategorySettingsScreen';
 import AboutScreen from '../screens/AboutScreen';
 
 
@@ -109,7 +108,6 @@ RecentStack.navigationOptions = ({ navigation }) => {
 const SettingsStack = createStackNavigator(
     {
         Settings: SettingsScreen,
-        CategorySettings: CategorySettingsScreen,
         About: AboutScreen,
     }, {
         initialRouteName: 'Settings',

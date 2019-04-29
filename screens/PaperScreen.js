@@ -6,10 +6,11 @@ import {
     Text,
     TouchableOpacity,
     View,
-    AsyncStorage,
 } from 'react-native';
 
 import MathJax from 'react-native-mathjax';
+
+import Settings from '../util/Settings';
 
 class PaperSummary extends React.Component {
     render() {
@@ -62,16 +63,14 @@ export default class PaperScreen extends React.Component {
     }
 
     componentDidMount() {
-        AsyncStorage.getItem('config')
-            .then(JSON.parse)
-            .then((config) => {
-                this.setState({ useMathJax: config.useMathJax, loaded: true });
+        Settings.getConfig('useMathJax')
+            .then((useMathJax) => {
+                this.setState({ useMathJax, loaded: true });
             });
     }
 
     render() {
         const item = this.props.navigation.state.params;
-        console.log(item.summary);
         if (!this.state.loaded) {
             return null;
         }

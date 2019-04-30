@@ -49,9 +49,8 @@ export default class Settings {
                 if (index >= 0) {
                     newFavourites = [...favourites.slice(0, index), ...favourites.slice(index + 1)];
                 } else {
-                    newFavourites = [...favourites, id];
+                    newFavourites = [id, ...favourites];
                 }
-                console.log(`new: ${newFavourites}`);
                 return AsyncStorage.setItem('favourites', JSON.stringify(newFavourites)).then(() => newFavourites);
             })
             .then((favourites) => {

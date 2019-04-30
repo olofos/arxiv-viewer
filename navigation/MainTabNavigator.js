@@ -11,6 +11,8 @@ import NewListScreen from '../screens/NewListScreen';
 import RecentCategoryListScreen from '../screens/RecentCategoryListScreen';
 import RecentListScreen from '../screens/RecentListScreen';
 
+import FavouritesListScreen from '../screens/FavouritesListScreen';
+
 import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
 
@@ -105,6 +107,48 @@ RecentStack.navigationOptions = ({ navigation }) => {
     };
 };
 
+const FavouritesStack = createStackNavigator(
+    {
+        List: FavouritesListScreen,
+        Paper: PaperScreen,
+        PDF: PDFScreen,
+    }, {
+        initialRouteName: 'List',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: Colors.tintColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    },
+);
+
+FavouritesStack.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 2) {
+        tabBarVisible = false;
+    }
+
+    return {
+        tabBarVisible,
+        tabBarLabel: 'Favourites',
+        // eslint-disable-next-line react/display-name
+        tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+                focused={focused}
+                name={
+                    Platform.OS === 'ios'
+                        ? `ios-clock${focused ? '' : '-outline'}`
+                        : 'md-star'
+                }
+            />
+        ),
+    };
+};
+
 const SettingsStack = createStackNavigator(
     {
         Settings: SettingsScreen,
@@ -138,6 +182,7 @@ export default createBottomTabNavigator(
     {
         NewStack,
         RecentStack,
+        FavouritesStack,
         SettingsStack,
     }, {
         initialRouteName: 'NewStack',

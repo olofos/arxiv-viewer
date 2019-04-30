@@ -85,7 +85,7 @@ export default class PaperScreen extends React.Component {
                     </TouchableOpacity>
                 </View>
             ),
-        }
+        };
     }
 
     constructor() {

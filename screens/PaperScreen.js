@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
         paddingTop: 8,
         paddingBottom: 8,
         paddingLeft: 10,
+        paddingRight: 10,
         borderBottomWidth: 1,
         borderTopWidth: 1,
         borderColor: '#ddd',

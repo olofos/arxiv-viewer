@@ -24,6 +24,8 @@ export default class FavouritesListScreen extends React.Component {
             this.setState({ fetching: true });
             Arxiv.fetchPapersById(favouriteIds)
                 .then(papers => this.setState({ favouritePapers: papers, fetching: false }));
+        } else {
+            this.setState({ favouritePapers: [] });
         }
     }
 

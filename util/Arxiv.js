@@ -93,7 +93,6 @@ export default class Arxiv {
     static fetchRecent(category, start = 0, max = 25) {
         const query = `search_query=${category}&sortBy=submittedDate&sortOrder=descending&max_results=${max}&start=${start}`;
         const url = `https://export.arxiv.org/api/query?${query}`;
-        console.log(url);
         return fetch(url)
             .then(response => response.text())
             .then(response => parseAtom(response))
@@ -105,7 +104,6 @@ export default class Arxiv {
     static fetchPapersById(ids) {
         if (ids && ids.length > 0) {
             const url = `https://export.arxiv.org/api/query?id_list=${ids.join(',')}&start=0&max_results=${ids.length}`;
-            console.log(url);
             return fetch(url)
                 .then(response => response.text())
                 .then(response => parseAtom(response))

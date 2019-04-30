@@ -96,7 +96,6 @@ export default class PaperScreen extends React.Component {
     checkFavourite(favourites) {
         const { item } = this.props.navigation.state.params;
         const id = Arxiv.baseId(item.id);
-        console.log(favourites);
         const isFavourite = !!favourites.find(elem => elem === id);
         this.props.navigation.setParams({ isFavourite });
         this.forceUpdate();

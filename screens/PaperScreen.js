@@ -60,14 +60,14 @@ const CustomHeader = ({ title, subtitle }) => (
 );
 
 export default class PaperScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => (
-        {
-            headerTitle: CustomHeader({ title: navigation.getParam('id', '????.?????'), subtitle: navigation.getParam('category') }),
+    static navigationOptions = ({ navigation }) => {
+        const { item } = navigation.state.params;
+        return {
+            headerTitle: CustomHeader({ title: item.id, subtitle: item.category }),
             headerRight: (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
                         onPress={() => {
-                            const item = navigation.state.params;
                             const id = Arxiv.baseId(item.id);
                             Settings.toggleFavourite(id);
                         }}>
@@ -76,17 +76,17 @@ export default class PaperScreen extends React.Component {
                             color='#fff'
                             size={24}
                             type='material'
-                            name={navigation.getParam('isFavourite', false) ? 'star' : 'star-border'}
+                            name={navigation.state.params.isFavourite ? 'star' : 'star-border'}
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
+                    <TouchableOpacity onPress={() => navigation.navigate('PDF', item)}>
                         <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
                     </TouchableOpacity>
                 </View>
             ),
         }
-    );
+    }
 
     constructor() {
         super();
@@ -94,7 +94,7 @@ export default class PaperScreen extends React.Component {
     }
 
     checkFavourite(favourites) {
-        const item = this.props.navigation.state.params;
+        const { item } = this.props.navigation.state.params;
         const id = Arxiv.baseId(item.id);
         console.log(favourites);
         const isFavourite = !!favourites.find(elem => elem === id);
@@ -121,7 +121,7 @@ export default class PaperScreen extends React.Component {
     }
 
     render() {
-        const item = this.props.navigation.state.params;
+        const { item } = this.props.navigation.state.params;
         if (!this.state.loaded) {
             return null;
         }

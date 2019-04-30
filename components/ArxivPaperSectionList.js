@@ -20,7 +20,7 @@ export default class ArxivPaperSectionList extends React.Component {
                 renderItem={({ item, index }) => {
                     if (item.id) {
                         return (
-                            <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', item)} />
+                            <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', { item })} />
                         );
                     } else {
                         return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;

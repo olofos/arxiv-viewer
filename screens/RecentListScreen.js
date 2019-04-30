@@ -4,7 +4,7 @@ import {
     View,
 } from 'react-native';
 
-import ArxivPaperList from '../components/ArxivPaperList';
+import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
@@ -52,7 +52,7 @@ export default class RecentListScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <ArxivPaperList
+                <ArxivPaperSectionList
                     sections={this.state.sections}
                     onEndReached={() => this.fetchMorePapers()}
                     refreshing={this.state.fetching}

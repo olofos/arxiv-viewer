@@ -5,7 +5,7 @@ import {
     View,
 } from 'react-native';
 
-import ArxivPaperList from '../components/ArxivPaperList';
+import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
@@ -92,7 +92,7 @@ export default class NewListScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <ArxivPaperList
+                <ArxivPaperSectionList
                     sections={this.state.fetching ? [] : [
                         { title: 'New', data: this.state.newPapers },
                         { title: 'Cross Listed', data: this.state.crossListedPapers },

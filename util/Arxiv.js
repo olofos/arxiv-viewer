@@ -116,4 +116,15 @@ export default class Arxiv {
             return Promise.resolve([]);
         }
     }
+
+    static baseId(id) {
+        const regexp = /(.*)v[0-9]+/;
+        const matches = id.match(regexp);
+
+        if (matches) {
+            return matches[1];
+        } else {
+            return id;
+        }
+    }
 }

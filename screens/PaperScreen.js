@@ -8,15 +8,22 @@ import {
     View,
 } from 'react-native';
 
+import { Icon } from 'react-native-elements';
+
 import MathJax from 'react-native-mathjax';
 
 import Settings from '../util/Settings';
+import Arxiv from '../util/Arxiv';
 
 class PaperSummary extends React.Component {
     render() {
         const { useMathJax, summary } = this.props;
         if (!useMathJax) {
-            return <Text style={[styles.box, styles.paperSummary]}>{summary}</Text>;
+            return (
+                <View style={styles.box}>
+                    <Text style={styles.paperSummary}>{summary}</Text>
+                </View >
+            );
         } else {
             return (
                 <View style={[styles.box, { paddingLeft: 4 }]}>
@@ -45,14 +52,38 @@ class PaperSummary extends React.Component {
     }
 }
 
+const CustomHeader = ({ title, subtitle }) => (
+    <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>{title}</Text>
+        <Text style={styles.headerSubtitle}>{subtitle}</Text>
+    </View>
+);
+
 export default class PaperScreen extends React.Component {
     static navigationOptions = ({ navigation }) => (
         {
-            title: `${navigation.getParam('id', '????.?????')} [${navigation.getParam('category')}]`,
+            headerTitle: CustomHeader({ title: navigation.getParam('id', '????.?????'), subtitle: navigation.getParam('category') }),
             headerRight: (
-                <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
-                    <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            const item = navigation.state.params;
+                            const id = Arxiv.baseId(item.id);
+                            Settings.toggleFavourite(id);
+                        }}>
+                        <Icon
+                            containerStyle={{ flex: 0, marginRight: 8 }}
+                            color='#fff'
+                            size={24}
+                            type='material'
+                            name={navigation.getParam('isFavourite', false) ? 'star' : 'star-border'}
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => navigation.navigate('PDF', navigation.state.params)}>
+                        <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
+                    </TouchableOpacity>
+                </View>
             ),
         }
     );
@@ -62,11 +93,31 @@ export default class PaperScreen extends React.Component {
         this.state = { loaded: false, useMathJax: false };
     }
 
+    checkFavourite(favourites) {
+        const item = this.props.navigation.state.params;
+        const id = Arxiv.baseId(item.id);
+        console.log(favourites);
+        const isFavourite = !!favourites.find(elem => elem === id);
+        this.props.navigation.setParams({ isFavourite });
+        this.forceUpdate();
+    }
+
     componentDidMount() {
         Settings.getConfig('useMathJax')
             .then((useMathJax) => {
                 this.setState({ useMathJax, loaded: true });
             });
+
+        Settings.getFavourites()
+            .then(favourites => this.checkFavourite(favourites));
+
+        this.favouriteListener = Settings.addEventListener('favourites-updated', favourites => this.checkFavourite(favourites));
+    }
+
+    componentWillUnmount() {
+        if (this.favouriteListener) {
+            this.favouriteListener.remove();
+        }
     }
 
     render() {
@@ -140,5 +191,16 @@ const styles = StyleSheet.create({
         paddingTop: 2,
         paddingBottom: 2,
         fontSize: 12,
+    },
+
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+
+    headerSubtitle: {
+        fontSize: 12,
+        color: '#fff',
     },
 });

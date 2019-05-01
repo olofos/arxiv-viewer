@@ -31,21 +31,30 @@ function parseRSSItemId(item, mainCategory) {
 }
 
 function parseAtomEntry(entry) {
-    const idURL = entry.getElementsByTagName('id')[0].childNodes[0].nodeValue;
-    const updated = new Date(entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue);
-    const published = new Date(entry.getElementsByTagName('published')[0].childNodes[0].nodeValue);
-    const title = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
-    const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
-    const commentNode = entry.getElementsByTagName('arxiv:comment');
-    const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue : '';
-    const category = entry.getElementsByTagName('category')[0].getAttribute('term');
+    if (entry.getElementsByTagName('id').length > 0) {
+        const title = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
 
-    const authorList = Array.from(entry.getElementsByTagName('author'));
-    const authors = authorList.reduce((acc, node) => { acc.push(node.getElementsByTagName('name')[0].childNodes[0].nodeValue); return acc; }, []);
+        if (title === 'Error') {
+            return null;
+        }
 
-    const id = idURL.match(/http:\/\/arxiv.org\/abs\/(.*)/)[1];
+        const idURL = entry.getElementsByTagName('id')[0].childNodes[0].nodeValue;
+        const updated = new Date(entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue);
+        const published = new Date(entry.getElementsByTagName('published')[0].childNodes[0].nodeValue);
+        const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
+        const commentNode = entry.getElementsByTagName('arxiv:comment');
+        const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue : '';
+        const category = entry.getElementsByTagName('category')[0].getAttribute('term');
 
-    return { id, updated, published, title, summary, comment, category, authors };
+        const authorList = Array.from(entry.getElementsByTagName('author'));
+        const authors = authorList.reduce((acc, node) => { acc.push(node.getElementsByTagName('name')[0].childNodes[0].nodeValue); return acc; }, []);
+
+        const id = idURL.match(/http:\/\/arxiv.org\/abs\/(.*)/)[1];
+
+        return { id, updated, published, title, summary, comment, category, authors };
+    } else {
+        return null;
+    }
 }
 
 function parseRSS(text, category) {
@@ -63,7 +72,7 @@ function parseAtom(response) {
     const xml = parser.parseFromString(response, 'text/xml');
 
     const items = Array.from(xml.getElementsByTagName('entry'));
-    const papers = items.map(item => parseAtomEntry(item));
+    const papers = items.map(item => parseAtomEntry(item)).filter(paper => paper !== null);
 
     return papers;
 }
@@ -74,6 +83,31 @@ const categories = ArxivCategories.map(sect => (
         data: sect.categories.map(cat => ({ text: `${cat.name} [${cat.category}]`, category: cat.category, name: cat.name })),
     }
 ));
+
+function isValidIdv1(str) {
+    const regexp = /^[a-zA-Z-]+(\.[a-zA-Z]+)?\/([0-9]{2})([0-9]{2})[0-9]{3}$/;
+
+    const match = str.match(regexp);
+    if (!match) return false;
+
+    const year = parseInt(match[2], 10);
+    const month = parseInt(match[3], 10);
+
+    if (month < 1 || month > 12) return false;
+    if (year > 7 && year < 97) return false;
+
+    return regexp.test(str);
+}
+
+function isValidIdv2(str) {
+    const regexp = /^[0-9]{4}\.[0-9]{4}$/;
+    return regexp.test(str);
+}
+
+function isValidIdv3(str) {
+    const regexp = /^[0-9]{4}\.[0-9]{5}$/;
+    return regexp.test(str);
+}
 
 export default class Arxiv {
     static get categories() {
@@ -101,9 +135,10 @@ export default class Arxiv {
             });
     }
 
-    static fetchPapersById(ids) {
+    static fetchPapersById(ids, start = 0, max = null) {
         if (ids && ids.length > 0) {
-            const url = `https://export.arxiv.org/api/query?id_list=${ids.join(',')}&start=0&max_results=${ids.length}`;
+            const url = `https://export.arxiv.org/api/query?id_list=${ids.join(',')}&start=${start}&max_results=${max || ids.length}`;
+            console.log(url);
             return fetch(url)
                 .then(response => response.text())
                 .then(response => parseAtom(response))
@@ -124,5 +159,23 @@ export default class Arxiv {
         } else {
             return id;
         }
+    }
+
+    static isValidId(id) {
+        return isValidIdv1(id) || isValidIdv2(id) || isValidIdv3(id);
+    }
+
+
+    static makeCanonicalId(id) {
+        if (isValidIdv2(id) || isValidIdv3(id)) return id;
+
+        if (isValidIdv1(id)) {
+            const regexp = /^([a-zA-Z-]+)(\.[a-zA-Z]+)?\/([0-9]{2})([0-9]{2})([0-9]{3})$/;
+            const match = id.match(regexp);
+
+            return `${match[1].toLowerCase()}/${match[3]}${match[4]}${match[5]}`;
+        }
+
+        return '';
     }
 }

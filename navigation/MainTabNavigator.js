@@ -13,6 +13,9 @@ import RecentListScreen from '../screens/RecentListScreen';
 
 import FavouritesListScreen from '../screens/FavouritesListScreen';
 
+import SearchScreen from '../screens/SearchScreen';
+import SearchListScreen from '../screens/SearchListScreen';
+
 import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
 
@@ -141,8 +144,51 @@ FavouritesStack.navigationOptions = ({ navigation }) => {
                 focused={focused}
                 name={
                     Platform.OS === 'ios'
-                        ? `ios-clock${focused ? '' : '-outline'}`
+                        ? `ios-star${focused ? '' : '-outline'}`
                         : 'md-star'
+                }
+            />
+        ),
+    };
+};
+
+const SearchStack = createStackNavigator(
+    {
+        Search: SearchScreen,
+        List: SearchListScreen,
+        Paper: PaperScreen,
+        PDF: PDFScreen,
+    }, {
+        initialRouteName: 'Search',
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: Colors.tintColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    },
+);
+
+SearchStack.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 2) {
+        tabBarVisible = false;
+    }
+
+    return {
+        tabBarVisible,
+        tabBarLabel: 'Search',
+        // eslint-disable-next-line react/display-name
+        tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+                focused={focused}
+                name={
+                    Platform.OS === 'ios'
+                        ? `ios-search${focused ? '' : '-outline'}`
+                        : 'md-search'
                 }
             />
         ),
@@ -182,6 +228,7 @@ export default createBottomTabNavigator(
     {
         NewStack,
         RecentStack,
+        SearchStack,
         FavouritesStack,
         SettingsStack,
     }, {

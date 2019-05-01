@@ -16,16 +16,16 @@ export default class FavouritesListScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { favouritePapers: [], fetching: false };
+        this.state = { favouritePapers: [], fetching: true };
     }
 
     updateFavourites(favouriteIds) {
+        this.setState({ fetching: true });
         if (favouriteIds.length > 0) {
-            this.setState({ fetching: true });
             Arxiv.fetchPapersById(favouriteIds)
                 .then(papers => this.setState({ favouritePapers: papers, fetching: false }));
         } else {
-            this.setState({ favouritePapers: [] });
+            this.setState({ favouritePapers: [], fetching: false });
         }
     }
 
@@ -43,7 +43,7 @@ export default class FavouritesListScreen extends React.Component {
     }
 
     render() {
-        if (this.state.favouritePapers.length > 0) {
+        if (this.state.favouritePapers.length > 0 || this.state.fetching) {
             return (
                 <View style={styles.container}>
                     <ArxivPaperFlatList

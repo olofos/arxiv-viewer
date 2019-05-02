@@ -27,6 +27,13 @@ export default class ArxivPaperFlatList extends React.Component {
                         onRefresh={() => this.props.onRefresh && this.props.onRefresh()}
                     />
                 }
+
+                onEndReachedThreshold={1}
+                onEndReached={() => {
+                    if (this.props.onEndReached) {
+                        this.props.onEndReached();
+                    }
+                }}
             />
         );
     }

@@ -86,6 +86,20 @@ export default class SearchScreen extends React.Component {
                         this.props.navigation.navigate('List', { query: { authors: text } });
                     }}
                 />
+
+                <SearchBox
+                    placeholder="Search title"
+                    onSubmit={(text) => {
+                        this.props.navigation.navigate('List', { query: { titles: text } });
+                    }}
+                />
+
+                <SearchBox
+                    placeholder="Search all"
+                    onSubmit={(text) => {
+                        this.props.navigation.navigate('List', { query: { all: text } });
+                    }}
+                />
             </View>
         );
     }

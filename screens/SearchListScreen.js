@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 
 import Arxiv from '../util/Arxiv';
-import Settings from '../util/Settings';
 import ArxivPaperFlatList from '../components/ArxivPaperFlatList';
 
 export default class SearchListScreen extends React.Component {
@@ -16,25 +15,26 @@ export default class SearchListScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { papers: [], fetching: true };
+        this.state = { papers: [], numLoaded: 0, fetching: true };
+
+        this.query = this.props.navigation.state.params.query;
+        this.numLoaded = 0;
+    }
+
+    fetchMorePapers() {
+        this.setState({ fetching: true });
+        Arxiv.fetchPapersBySearchQuery(this.query, this.state.numLoaded, 25)
+            .then((newPapers) => {
+                if (this.state.numLoaded === 0 && newPapers.length === 1) {
+                    this.props.navigation.replace('Paper', { item: newPapers[0] });
+                } else {
+                    this.setState({ papers: [...this.state.papers, ...newPapers], numLoaded: this.state.numLoaded + newPapers.length, fetching: false });
+                }
+            });
     }
 
     componentDidMount() {
-        console.log(this.props.navigation.state.params);
-        const { query } = this.props.navigation.state.params;
-
-        if (query.ids) {
-            const ids = query.ids.split(/[\s,]/).filter(s => s.length > 0).map(Arxiv.makeCanonicalId);
-
-            Arxiv.fetchPapersById(ids)
-                .then((papers) => {
-                    if (papers.length === 1) {
-                        this.props.navigation.replace('Paper', { item: papers[0] })
-                    } else {
-                        this.setState({ papers, fetching: false });
-                    }
-                });
-        }
+        this.fetchMorePapers();
     }
 
     render() {
@@ -45,6 +45,7 @@ export default class SearchListScreen extends React.Component {
                         data={this.state.papers}
                         refreshing={this.state.fetching}
                         navigation={this.props.navigation}
+                        onEndReached={() => this.fetchMorePapers()}
                     />
                 </View>
             );

@@ -150,6 +150,46 @@ export default class Arxiv {
         }
     }
 
+    static fetchPapersBySearchQuery(query, start = 0, max = 25) {
+        let queryString = '';
+
+        if (query.ids) {
+            const ids = query.ids.split(/[\s,]/).filter(s => s.length > 0).map(Arxiv.makeCanonicalId);
+            queryString += `&id_list=${ids.map(encodeURIComponent).join(',')}`;
+        }
+
+        const searchStrings = [];
+
+        if (query.authors) {
+            searchStrings.push(`au:${encodeURIComponent(query.authors)}`);
+        }
+
+        if (query.titles) {
+            searchStrings.push(`ti:${encodeURIComponent(query.titles)}`);
+        }
+
+        if (query.all) {
+            searchStrings.push(`all:${encodeURIComponent(query.all)}`);
+        }
+
+        if (searchStrings.length > 0) {
+            queryString += `&search_query=${searchStrings.join('+AND+')}`;
+        }
+
+        if (queryString.length > 0) {
+            const url = `https://export.arxiv.org/api/query?start=${start}&max_results=${max}${queryString}`;
+            console.log(url);
+            return fetch(url)
+                .then(response => response.text())
+                .then(response => parseAtom(response))
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            return Promise.resolve([]);
+        }
+    }
+
     static baseId(id) {
         const regexp = /(.*)v[0-9]+/;
         const matches = id.match(regexp);

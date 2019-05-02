@@ -43,7 +43,7 @@ function parseAtomEntry(entry) {
         const published = new Date(entry.getElementsByTagName('published')[0].childNodes[0].nodeValue);
         const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
         const commentNode = entry.getElementsByTagName('arxiv:comment');
-        const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue : '';
+        const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue.replace(/[\n\r ]+/g, ' ').trim() : '';
         const category = entry.getElementsByTagName('category')[0].getAttribute('term');
 
         const authorList = Array.from(entry.getElementsByTagName('author'));

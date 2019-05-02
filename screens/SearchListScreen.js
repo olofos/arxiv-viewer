@@ -27,7 +27,13 @@ export default class SearchListScreen extends React.Component {
             const ids = query.ids.split(/[\s,]/).filter(s => s.length > 0).map(Arxiv.makeCanonicalId);
 
             Arxiv.fetchPapersById(ids)
-                .then(papers => this.setState({ papers, fetching: false }));
+                .then((papers) => {
+                    if (papers.length === 1) {
+                        this.props.navigation.replace('Paper', { item: papers[0] })
+                    } else {
+                        this.setState({ papers, fetching: false });
+                    }
+                });
         }
     }
 

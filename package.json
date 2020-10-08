@@ -31,7 +31,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-react": "^7.12.4",
-    "expo-cli": "^2.14.0",
+    "expo-cli": "^3.27.14",
     "expo-codemod": "^1.0.29",
     "jest-expo": "^34.0.0"
   },

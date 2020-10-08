@@ -13,11 +13,13 @@
   "dependencies": {
     "@expo/samples": "2.1.1",
     "@expo/vector-icons": "^10.2.1",
-    "expo": "^33.0.0",
+    "expo": "^34.0.0",
     "react": "16.8.3",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
     "react-native-elements": "^1.1.0",
+    "react-native-gesture-handler": "^1.8.0",
     "react-native-mathjax": "^2.0.0",
+    "react-native-reanimated": "^1.13.1",
     "react-native-section-list-get-item-layout": "^2.2.3",
     "react-navigation": "^2.18.2",
     "xmldom": "^0.1.27"
@@ -31,7 +33,7 @@
     "eslint-plugin-react": "^7.12.4",
     "expo-cli": "^2.14.0",
     "expo-codemod": "^1.0.29",
-    "jest-expo": "^33.0.0"
+    "jest-expo": "^34.0.0"
   },
   "private": true
 }

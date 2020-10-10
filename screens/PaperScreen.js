@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     ScrollView,
-    FlatList,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -10,9 +9,7 @@ import {
 
 import { Icon } from 'react-native-elements';
 
-import { WebView } from 'react-native-webview';
 import MathJax from '../components/MathJax';
-
 
 import Settings from '../util/Settings';
 import Arxiv from '../util/Arxiv';

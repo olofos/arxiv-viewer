@@ -10,7 +10,9 @@ import {
 
 import { Icon } from 'react-native-elements';
 
-import MathJax from 'react-native-mathjax';
+import { WebView } from 'react-native-webview';
+import MathJax from '../components/MathJax';
+
 
 import Settings from '../util/Settings';
 import Arxiv from '../util/Arxiv';
@@ -26,7 +28,7 @@ class PaperSummary extends React.Component {
             );
         } else {
             return (
-                <View style={[styles.box, { paddingLeft: 4 }]}>
+                <View style={[styles.box, { paddingLeft: 4, flex: 1 }]}>
                     <MathJax
                         // HTML content with MathJax support
                         html={(`<p style="font-size:12pt;padding:0px;margin:0px">${summary}</p>`)}
@@ -44,7 +46,7 @@ class PaperSummary extends React.Component {
                                 extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js'],
                             },
                         }}
-                        style={{ paddingLeft: 0, margin: 0 }}
+                        style={{ paddingLeft: 0, margin: 0, flex: 1 }}
                     />
                 </View>
             );
@@ -63,8 +65,8 @@ export default class PaperScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { item } = navigation.state.params;
         return {
-            headerTitle: CustomHeader({ title: item.id, subtitle: item.category }),
-            headerRight: (
+            headerTitle: () => CustomHeader({ title: item.id, subtitle: item.category }),
+            headerRight: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
                         onPress={() => {
@@ -127,12 +129,9 @@ export default class PaperScreen extends React.Component {
         return (
             <ScrollView style={styles.paperContainer}>
                 <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
-                <FlatList
-                    style={[styles.box, { flex: 1 }]}
-                    data={item.authors}
-                    renderItem={it => <Text>{it.item}</Text>}
-                    keyExtractor={(it, index) => index.toString()}
-                />
+                <View style={[styles.box, { flex: 1 }]}>
+                    {item.authors.map((name, index) => <Text key={index}>{name}</Text>)}
+                </View>
 
                 <PaperSummary
                     useMathJax={this.state.useMathJax}

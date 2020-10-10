@@ -31,7 +31,7 @@ function insertEmptyPlaceHolder(list) {
 
 export default class NewListScreen extends React.Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: <CustomHeader title={navigation.getParam('category', 'Unknown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
+        headerTitle: () => <CustomHeader title={navigation.getParam('category', 'Unknown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
     });
 
     constructor(props) {

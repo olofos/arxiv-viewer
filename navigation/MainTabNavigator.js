@@ -1,6 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createAppContainer } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import Colors from '../constants/Colors';
@@ -32,7 +34,7 @@ const NewStack = createStackNavigator(
     },
     {
         initialRouteName: 'CategoryList',
-        navigationOptions: {
+        defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: Colors.tintColor,
             },
@@ -73,9 +75,10 @@ const RecentStack = createStackNavigator(
         List: RecentListScreen,
         Paper: PaperScreen,
         PDF: PDFScreen,
-    }, {
+    },
+    {
         initialRouteName: 'CategoryList',
-        navigationOptions: {
+        defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: Colors.tintColor,
             },
@@ -115,9 +118,10 @@ const FavouritesStack = createStackNavigator(
         List: FavouritesListScreen,
         Paper: PaperScreen,
         PDF: PDFScreen,
-    }, {
+    },
+    {
         initialRouteName: 'List',
-        navigationOptions: {
+        defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: Colors.tintColor,
             },
@@ -158,9 +162,10 @@ const SearchStack = createStackNavigator(
         List: SearchListScreen,
         Paper: PaperScreen,
         PDF: PDFScreen,
-    }, {
+    },
+    {
         initialRouteName: 'Search',
-        navigationOptions: {
+        defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: Colors.tintColor,
             },
@@ -199,9 +204,10 @@ const SettingsStack = createStackNavigator(
     {
         Settings: SettingsScreen,
         About: AboutScreen,
-    }, {
+    },
+    {
         initialRouteName: 'Settings',
-        navigationOptions: {
+        defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: Colors.tintColor,
             },
@@ -224,17 +230,18 @@ SettingsStack.navigationOptions = {
     ),
 };
 
-export default createBottomTabNavigator(
+export default createAppContainer(createBottomTabNavigator(
     {
         NewStack,
         RecentStack,
         SearchStack,
         FavouritesStack,
         SettingsStack,
-    }, {
+    },
+    {
         initialRouteName: 'NewStack',
         tabBarOptions: {
             activeTintColor: '#00b386',
         },
     },
-);
+));

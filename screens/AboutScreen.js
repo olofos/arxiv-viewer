@@ -19,7 +19,7 @@ export default class AboutScreen extends React.Component {
                 <View style={{ margin: 24 }}>
                     <Text>ArXiv Viewer</Text>
                     <Text>Version {expo.version}</Text>
-                    <Text>{'\u00A9'} 2019 Olof Ohlsson Sax</Text>
+                    <Text>{'\u00A9'} 2019-2020 Olof Ohlsson Sax</Text>
                 </View>
             </View>
         );

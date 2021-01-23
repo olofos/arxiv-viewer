@@ -159,7 +159,7 @@ export default class SettingsScreen extends React.Component {
         this.state = { loaded: false, config: null, modalVisible: false };
         this.categories = ['none'].concat(...Arxiv.categories.map(sect => sect.data.map(cat => cat.category)));
 
-        this.defaultConfig = { defaultCategory: null, useMathJax: true };
+        this.defaultConfig = { defaultCategory: null, useMathJax: true, openPDFInBrowser: false };
     }
 
     componentDidMount() {
@@ -195,6 +195,13 @@ export default class SettingsScreen extends React.Component {
                             onValueChange={value => this.setConfig('useMathJax', value)}
                             value={config.useMathJax}
                             title='Use MathJax'
+                            style={{ borderBottomWidth: 1 }}
+                        />
+
+                        <SettingSwitch
+                            onValueChange={value => this.setConfig('openPDFInBrowser', value)}
+                            value={config.openPDFInBrowser}
+                            title='Open PDFs in external browser'
                             style={{ borderBottomWidth: 1 }}
                         />
 

@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Linking,
 } from 'react-native';
 
 import { Icon } from 'react-native-elements';
@@ -79,7 +80,16 @@ export default class PaperScreen extends React.Component {
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('PDF', item)}>
+                    <TouchableOpacity onPress={() => {
+                        Settings.getConfig('openPDFInBrowser').then((browser) => {
+                            console.log(browser);
+                            if (browser) {
+                                Linking.openURL(`https://arxiv.org/pdf/${item.id}`);
+                            } else {
+                                navigation.navigate('PDF', item);
+                            }
+                        });
+                    }}>
                         <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
                     </TouchableOpacity>
                 </View>

@@ -1,6 +1,4 @@
-import {
-    AsyncStorage,
-} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 

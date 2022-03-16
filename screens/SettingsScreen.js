@@ -17,7 +17,7 @@ import Settings from '../util/Settings';
 class SettingsGroup extends React.Component {
     render() {
         return (
-            <View style={[{ marginTop: 16, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#999' }, this.props.style]}>
+            <View style={[{ marginTop: 16, backgroundColor: '#fff', borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#bbb' }, this.props.style]}>
                 {this.props.children}
             </View>
         );
@@ -27,7 +27,7 @@ class SettingsGroup extends React.Component {
 class SettingSwitch extends React.Component {
     render() {
         return (
-            <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#999' }, this.props.style]}>
+            <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#bbb' }, this.props.style]}>
                 <Text style={{
                     fontSize: 16,
                     flex: 1,
@@ -38,6 +38,8 @@ class SettingSwitch extends React.Component {
                 <Switch
                     style={{ marginRight: 15, flex: 1, justifyContent: 'center' }}
                     value={this.props.value}
+                    thumbColor={this.props.value ? '#00b386' : '#9b9b9b'}
+                    trackColor={{true: '#abe3d5', false: '#c7c7c7'}}
                     onValueChange={value => this.props.onValueChange(value)} />
 
             </View>
@@ -49,7 +51,7 @@ class SettingTouchable extends React.Component {
     render() {
         return (
             <TouchableHighlight onPress={() => this.props.onPress()} underlayColor='#b2dfdc'>
-                <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#999' }, this.props.style]}>
+                <View style={[{ marginLeft: 16, height: 50, flexDirection: 'row', justifyContent: 'center', borderColor: '#bbb' }, this.props.style]}>
                     <Text style={{ fontSize: 16, flex: 1, alignSelf: 'center' }}>
                         {this.props.title}
                     </Text>

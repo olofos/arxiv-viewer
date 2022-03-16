@@ -106,7 +106,7 @@ RecentStack.navigationOptions = ({ navigation }) => {
                 name={
                     Platform.OS === 'ios'
                         ? `ios-clock${focused ? '' : '-outline'}`
-                        : 'md-clock'
+                        : 'md-time-outline'
                 }
             />
         ),

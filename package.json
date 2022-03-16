@@ -31,7 +31,7 @@
     "react-navigation": "^4.4.2",
     "react-navigation-stack": "^2.8.4",
     "react-navigation-tabs": "^2.9.2",
-    "xmldom": "^0.1.27",
+    "xmldom": "^0.6.0",
     "@react-native-async-storage/async-storage": "~1.15.0"
   },
   "devDependencies": {

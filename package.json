@@ -35,9 +35,10 @@
     "react-navigation-tabs": "^2.9.2"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
+    "@babel/core": "^7.17.7",
+    "@babel/eslint-parser": "^7.17.0",
     "babel-preset-expo": "9.0.2",
-    "eslint": "^5.16.0",
+    "eslint": "^8.11.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-react": "^7.12.4",

@@ -21,12 +21,17 @@ module.exports = {
         "max-len": "off",
         "object-curly-newline": "off"
     },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
 
     "plugins": [
         "react"
     ],
 
-    "parser": "babel-eslint",
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
         "sourceType": "module",
         "allowImportExportEverywhere": true,

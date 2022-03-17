@@ -39,7 +39,7 @@ class SettingSwitch extends React.Component {
                     style={{ marginRight: 15, flex: 1, justifyContent: 'center' }}
                     value={this.props.value}
                     thumbColor={this.props.value ? '#00b386' : '#9b9b9b'}
-                    trackColor={{true: '#abe3d5', false: '#c7c7c7'}}
+                    trackColor={{ true: '#abe3d5', false: '#c7c7c7' }}
                     onValueChange={value => this.props.onValueChange(value)} />
 
             </View>

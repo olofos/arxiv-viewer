@@ -7,7 +7,7 @@ export default class PDFScreen extends React.Component {
         {
             title: `${navigation.getParam('id', '????.?????')} [${navigation.getParam('category')}]`,
         }
-    )
+    );
 
     render() {
         return (

@@ -95,7 +95,7 @@ export default class PaperScreen extends React.Component {
                 </View>
             ),
         };
-    }
+    };
 
     constructor() {
         super();

@@ -137,7 +137,7 @@ export default class PaperScreen extends React.Component {
             <ScrollView style={styles.paperContainer}>
                 <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
                 <View style={[styles.box, { flex: 1 }]}>
-                    {item.authors.map((name, index) => <Text key={index}>{name}</Text>)}
+                    {item.authors.map((name, index) => <Text key={index} style={styles.paperAuthor}>{name}</Text>)}
                 </View>
 
                 <PaperSummary
@@ -145,6 +145,20 @@ export default class PaperScreen extends React.Component {
                     summary={item.summary}
                 />
                 {item.comment ? <Text style={[styles.box, styles.paperComment]}>Comments: {item.comment}</Text> : null}
+
+                <TouchableOpacity onPress={() => { Linking.openURL(`https://arxiv.org/abs/${item.id}`); }}>
+                    <View style={[styles.box, { flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
+                        <Text style={{ flex: 1, alignSelf: 'center' }}>
+                            Open arxiv page in browser
+                        </Text>
+
+                        <Icon type='material' name='chevron-right' color='#aaa' containerStyle={{
+                            flex: 0,
+                            marginRight: 15,
+                            alignSelf: 'center',
+                        }} />
+                    </View>
+                </TouchableOpacity>
             </ScrollView >
         );
     }
@@ -168,6 +182,10 @@ const styles = StyleSheet.create({
         paddingTop: 4,
         paddingBottom: 8,
         backgroundColor: '#eee',
+    },
+
+    paperAuthor: {
+        fontSize: 16,
     },
 
     paperTitle: {

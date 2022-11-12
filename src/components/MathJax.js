@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -16,26 +16,16 @@ const defaultOptions = {
     },
 };
 
-class MathJax extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            height: 1,
-        };
-    }
+export default function MathJax(props) {
+    const [height, setHeight] = useState(1);
 
-    handleMessage(message) {
-        this.setState({
-            height: Number(message.nativeEvent.data),
-        });
-    }
+    const handleMessage = useCallback((message) => {
+        setHeight(Number(message.nativeEvent.data));
+    });
 
-    wrapMathjax(content) {
-        const options = JSON.stringify(
-            Object.assign({}, defaultOptions, this.props.mathJaxOptions),
-        );
+    const options = JSON.stringify({ ...defaultOptions, ...props.mathJaxOptions });
 
-        return `
+    const html = `
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config(${options});
@@ -49,28 +39,18 @@ class MathJax extends React.Component {
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
             <div id="formula" style="visibility: hidden;">
-                ${content}
+                ${props.html}
             </div>
         `;
-    }
 
-    render() {
-        const html = this.wrapMathjax(this.props.html);
-
-        // Create new props without `props.html` field. Since it's deprecated.
-        const props = Object.assign({}, this.props, { html: undefined });
-
-        return (
-            <View style={{ height: this.state.height, ...props.style }}>
-                <WebView
-                    scrollEnabled={false}
-                    onMessage={this.handleMessage.bind(this)}
-                    source={{ html }}
-                    {...props}
-                />
-            </View>
-        );
-    }
+    return (
+        <View style={{ height, ...props.style }}>
+            <WebView
+                scrollEnabled={false}
+                onMessage={handleMessage}
+                source={{ html }}
+                {...props}
+            />
+        </View>
+    );
 }
-
-export default MathJax;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -7,33 +7,30 @@ import {
 import ArxivCategoryList from '../components/ArxivCategoryList';
 import Settings from '../util/Settings';
 
-export default class RecentCategoryListScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Recent Papers',
-    };
+export default function RecentCategoryListScreen({ navigation }) {
+    const [defaultCategory, setDefaultCategory] = useState();
 
-    goToCategory(cat) {
+    useEffect(() => {
+        Settings.getConfig('defaultCategory')
+            .then(category => setDefaultCategory(category));
+    }, []);
+
+    const goToCategory = (cat) => {
         console.log(`Going to category ${cat.category}`);
         if (cat.category) {
-            this.props.navigation.navigate('List', cat);
+            navigation.navigate('RecentListScreen', cat);
         }
     }
 
-    componentDidMount() {
-        Settings.getConfig('defaultCategory')
-            .then(category => this.categoryList.scrollToCategory(category));
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <ArxivCategoryList
-                    navigation={this.props.navigation}
-                    onPress={item => this.goToCategory(item)}
-                    ref={(categoryList) => { this.categoryList = categoryList; }} />
-            </View>
-        );
-    }
+    return (
+        <View style={styles.container}>
+            <ArxivCategoryList
+                defaultCategory={defaultCategory}
+                navigation={navigation}
+                onPress={item => goToCategory(item)}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

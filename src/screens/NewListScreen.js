@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -7,6 +7,8 @@ import {
 
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
+
+import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
 import { groupBy } from '../util/Util';
 
@@ -18,96 +20,59 @@ function extractIDs(list) {
     }
 }
 
-const CustomHeader = ({ title, subtitle }) => (
-    <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>{title}</Text>
-        <Text style={styles.headerSubtitle}>{subtitle}</Text>
-    </View>
-);
-
 function insertEmptyPlaceHolder(list) {
     return (list.length > 0) ? list : [{}];
 }
 
-export default class NewListScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-        headerTitle: () => <CustomHeader title={navigation.getParam('category', 'Unknown')} subtitle={navigation.getParam('activeSection', 'Loading')} />,
-    });
+export default function NewListScreen({ navigation, route }) {
+    const { category } = route.params;
+    const [newPapers, setNewPapers] = useState([]);
+    const [updatedPapers, setUpdatedPapers] = useState([]);
+    const [crossListedPapers, setCrossListedPapers] = useState([]);
+    const [fetching, setFetching] = useState(true);
+    const [subtitle, setSubtitle] = useState('');
 
-    constructor(props) {
-        super(props);
-        this.state = { newPapers: [], updatedPapers: [], crossListedPapers: [], fetching: false };
-        this.screenIsMounted = false;
-    }
+    useEffect(() => {
+        navigation.setOptions({ headerTitle: () => <TitleSubtitleHeader title={category} subtitle={subtitle} /> })
+    }, [subtitle])
 
-    fetchPapers() {
-        this.setState({ fetching: true });
-        this.props.navigation.setParams({ activeSection: 'Loading' });
+    const fetchPapers = () => {
+        setFetching(true);
+        setSubtitle('Loading');
 
-        Arxiv.fetchNew(this.props.navigation.getParam('category'))
+        Arxiv.fetchNew(category)
             .then((resultPapers) => {
                 const papers = groupBy(resultPapers, 'section');
 
                 const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
                     .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this.screenIsMounted) {
-                            this.setState({ newPapers: result });
-                        }
+                        setNewPapers(result);
                     });
 
                 const promiseUpdated = Arxiv.fetchPapersById(extractIDs(papers.updated))
                     .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this.screenIsMounted) {
-                            this.setState({ updatedPapers: result });
-                        }
+                        setUpdatedPapers(result);
                     });
 
                 const promiseCrossListed = Arxiv.fetchPapersById(extractIDs(papers.crossListed))
                     .then(result => insertEmptyPlaceHolder(result))
                     .then((result) => {
-                        if (this.screenIsMounted) {
-                            this.setState({ crossListedPapers: result });
-                        }
+                        setCrossListedPapers(result);
                     });
 
                 Promise.all([promiseNew, promiseUpdated, promiseCrossListed]).then(() => {
-                    if (this.screenIsMounted) {
-                        this.setState({ fetching: false });
-                    }
+                    setFetching(false);
                 });
             });
     }
 
-    componentDidMount() {
-        this.screenIsMounted = true;
-        this.fetchPapers();
-    }
+    useEffect(() => {
+        fetchPapers();
+    }, []);
 
-    componentWillUnmount() {
-        this.screenIsMounted = false;
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <ArxivPaperSectionList
-                    sections={this.state.fetching ? [] : [
-                        { title: 'New', data: this.state.newPapers },
-                        { title: 'Cross Listed', data: this.state.crossListedPapers },
-                        { title: 'Updated', data: this.state.updatedPapers },
-                    ]}
-                    refreshing={this.state.fetching}
-                    navigation={this.props.navigation}
-                    onRefresh={() => this.fetchPapers()}
-                    onViewableItemsChanged={data => this.onViewableItemsChanged(data)}
-                />
-            </View>
-        );
-    }
-
-    onViewableItemsChanged({ viewableItems }) {
+    const onViewableItemsChanged = ({ viewableItems }) => {
         if (viewableItems.length > 0) {
             const section = viewableItems[0].section.title.toLowerCase();
             let number = viewableItems[0].section.data.length;
@@ -116,17 +81,29 @@ export default class NewListScreen extends React.Component {
                 number = 0;
             }
 
-            const { setParams } = this.props.navigation;
-
-            setParams({
-                activeSection: `Showing ${number} ${section} ${number === 1 ? 'paper' : 'papers'}`,
-            });
+            setSubtitle(`Showing ${number} ${section} ${number === 1 ? 'paper' : 'papers'}`);
         }
-    }
+    };
+
+    return (
+        <View style={styles.container}>
+            <ArxivPaperSectionList
+                sections={fetching ? [] : [
+                    { title: 'New', data: newPapers },
+                    { title: 'Cross Listed', data: crossListedPapers },
+                    { title: 'Updated', data: updatedPapers },
+                ]}
+                refreshing={fetching}
+                navigation={navigation}
+                onRefresh={() => fetchPapers()}
+                onViewableItemsChanged={data => onViewableItemsChanged(data)}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    headerContainer: {
         flex: 1,
         backgroundColor: '#fff',
     },
@@ -134,11 +111,11 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#000',
     },
 
     headerSubtitle: {
         fontSize: 12,
-        color: '#fff',
+        color: '#000',
     },
 });

@@ -39,8 +39,8 @@ function parseAtomEntry(entry) {
         }
 
         const idURL = entry.getElementsByTagName('id')[0].childNodes[0].nodeValue;
-        const updated = new Date(entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue);
-        const published = new Date(entry.getElementsByTagName('published')[0].childNodes[0].nodeValue);
+        const updated = entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
+        const published = entry.getElementsByTagName('published')[0].childNodes[0].nodeValue;
         const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
         const commentNode = entry.getElementsByTagName('arxiv:comment');
         const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue.replace(/[\n\r ]+/g, ' ').trim() : '';

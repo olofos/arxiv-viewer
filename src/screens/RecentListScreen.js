@@ -1,70 +1,119 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     View,
+    TouchableOpacity,
+    Text,
 } from 'react-native';
 
+import { Ionicons } from '@expo/vector-icons';
+
+import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
 
 import { groupBy } from '../util/Util';
 
-export default class RecentListScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-        title: navigation.getParam('category', 'Unkown'),
-    });
 
-    constructor(props) {
-        super(props);
-        this.state = { sections: [], numLoaded: 0, fetching: false };
-    }
+export default function RecentListScreen({ navigation, route }) {
+    const [sections, setSections] = useState([]);
+    const [filteredSections, setFilteredSections] = useState([]);
+    const [numLoaded, setNumLoaded] = useState(0);
+    const [fetching, setFetching] = useState(true);
+    const [subtitle, setSubtitle] = useState('');
+    const [showCrossref, setShowCrossref] = useState(true);
 
-    fetchMorePapers() {
-        this.setState({ fetching: true });
-        Arxiv.fetchRecent(this.props.navigation.getParam('category'), this.state.numLoaded, 25)
+
+    const { category } = route.params;
+
+    const fetchMorePapers = () => {
+        setFetching(true);
+
+        Arxiv.fetchRecent(category, numLoaded, 25)
             .then((result) => {
-                const papers = groupBy(result, p => p.updated.toISOString().slice(0, 10));
+                const papers = groupBy(result, p => new Date(p.updated).toISOString().slice(0, 10));
                 const newSections = Object.keys(papers).map(k => (
                     { title: k, data: papers[k] }
                 ));
 
-                let { sections } = this.state;
+                let mergedSections = sections.map((entry) => ({ title: entry.title, data: [...entry.data] }));
 
                 newSections.forEach((entry) => {
-                    const index = sections.findIndex(oldEntry => oldEntry.title === entry.title);
+                    const index = mergedSections.findIndex(oldEntry => oldEntry.title === entry.title);
                     if (index >= 0) {
-                        sections[index].data = sections[index].data.concat(entry.data);
+                        mergedSections[index].data = mergedSections[index].data.concat(entry.data);
                     } else {
-                        sections = sections.concat(entry);
+                        mergedSections = mergedSections.concat(entry);
                     }
                 });
 
-                const numLoaded = this.state.numLoaded + result.length;
-
-                this.setState({ sections, fetching: false, numLoaded });
+                setSections(mergedSections);
+                setNumLoaded(numLoaded + result.length);
+                setFetching(false);
             });
     }
 
-    componentDidMount() {
-        this.fetchMorePapers();
-    }
+    const onViewableItemsChanged = ({ viewableItems }) => {
+        if (viewableItems.length > 0) {
+            setSubtitle(viewableItems[0].section.title);
+        }
+    };
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <ArxivPaperSectionList
-                    sections={this.state.sections}
-                    onEndReached={() => this.fetchMorePapers()}
-                    refreshing={this.state.fetching}
-                    navigation={this.props.navigation}
-                    onRefresh={() => {
-                        this.setState({ sections: [], numLoaded: 0 });
-                        this.fetchMorePapers();
-                    }}
-                />
-            </View>
-        );
-    }
+    useEffect(() => {
+        navigation.setOptions({ headerTitle: () => <TitleSubtitleHeader title={category} subtitle={subtitle} /> })
+    }, [subtitle]);
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        onPress={() => { setShowCrossref(!showCrossref) }}>
+                        {/* <View style={{ flex: 0, marginRight: 14 }}>
+                            <Ionicons
+                                color={showCrossref ? '#aaa' : '#000'}
+                                size={24}
+                                name={'filter'}
+                            />
+                        </View> */}
+                        <View style={{ flex: 0, marginRight: 14 }}>
+                            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 12, color: '#fff' }}>{showCrossref ? 'Hide' : 'Show'}</Text>
+                                <Text style={{ fontSize: 12, color: '#fff' }}>Crossrefs</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )
+        })
+    }, [showCrossref])
+
+    useEffect(fetchMorePapers, []);
+
+    useEffect(() => {
+        const filtered = sections.map((sect) => ({
+            title: sect.title,
+            data: sect.data.filter((entry) => showCrossref || (entry.category === category))
+        }));
+        setFilteredSections(filtered);
+    }, [sections, showCrossref]);
+
+    return (
+        <View style={styles.container}>
+            <ArxivPaperSectionList
+                sections={filteredSections}
+                refreshing={fetching}
+                navigation={navigation}
+                onRefresh={() => {
+                    setSections([]);
+                    setNumLoaded(0);
+                    fetchMorePapers();
+                }}
+                onEndReached={fetchMorePapers}
+                onViewableItemsChanged={data => onViewableItemsChanged(data)}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

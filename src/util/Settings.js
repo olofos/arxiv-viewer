@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
+import { useState, useEffect } from 'react';
+
 const defaultConfig = { defaultCategory: null, useMathJax: true };
 
 const eventEmitter = new EventEmitter();
@@ -61,3 +63,21 @@ export default class Settings {
         return eventEmitter.addListener(eventName, handler);
     }
 }
+
+function useFavourites() {
+    const [favourites, setFavourites] = useState([]);
+
+    useEffect(() => {
+        Settings.getFavourites()
+            .then((favourites) => setFavourites(favourites));
+    }, []);
+
+    useEffect(() => {
+        const subscription = Settings.addEventListener('favourites-updated', (favourites) => setFavourites(favourites));
+        return () => subscription.remove();
+    }, []);
+
+    return favourites;
+};
+
+export { useFavourites };

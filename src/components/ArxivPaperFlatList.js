@@ -8,33 +8,31 @@ import ArxivPaperBrief from './ArxivPaperBrief';
 
 import Colors from '../constants/Colors';
 
-export default class ArxivPaperFlatList extends React.Component {
-    render() {
-        return (
-            <FlatList
-                data={this.props.data}
+export default function ArxivPaperFlatList(props) {
+    return (
+        <FlatList
+            data={props.data}
 
-                renderItem={({ item, index }) => (
-                    <ArxivPaperBrief item={item} index={index} onPress={() => this.props.navigation.navigate('Paper', { item })} />
-                )}
+            renderItem={({ item, index }) => (
+                <ArxivPaperBrief item={item} index={index} onPress={() => props.navigation.navigate('PaperScreen', { item })} />
+            )}
 
-                keyExtractor={item => item.id}
+            keyExtractor={item => item.id}
 
-                refreshControl={
-                    <RefreshControl
-                        colors={[Colors.tintColor]}
-                        refreshing={this.props.refreshing}
-                        onRefresh={() => this.props.onRefresh && this.props.onRefresh()}
-                    />
+            refreshControl={
+                <RefreshControl
+                    colors={[Colors.tintColor]}
+                    refreshing={props.refreshing}
+                    onRefresh={() => props.onRefresh && props.onRefresh()}
+                />
+            }
+
+            onEndReachedThreshold={1}
+            onEndReached={() => {
+                if (props.onEndReached) {
+                    props.onEndReached();
                 }
-
-                onEndReachedThreshold={1}
-                onEndReached={() => {
-                    if (this.props.onEndReached) {
-                        this.props.onEndReached();
-                    }
-                }}
-            />
-        );
-    }
+            }}
+        />
+    );
 }

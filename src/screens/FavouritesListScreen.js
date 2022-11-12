@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -6,61 +6,47 @@ import {
 } from 'react-native';
 
 import Arxiv from '../util/Arxiv';
-import Settings from '../util/Settings';
+import Settings, { useFavourites } from '../util/Settings';
 import ArxivPaperFlatList from '../components/ArxivPaperFlatList';
 
-export default class FavouritesListScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Favourites',
-    };
 
-    constructor(props) {
-        super(props);
-        this.state = { favouritePapers: [], fetching: true };
-    }
+export default function FavouritesListScreen(props) {
+    const [favourites, setFavourites] = useState([]);
+    const [fetching, setFetching] = useState(false);
 
-    updateFavourites(favouriteIds) {
-        this.setState({ fetching: true });
+    const favouriteIds = useFavourites();
+
+    useEffect(() => {
+        setFetching(true);
         if (favouriteIds.length > 0) {
             Arxiv.fetchPapersById(favouriteIds)
-                .then(papers => this.setState({ favouritePapers: papers, fetching: false }));
+                .then(papers => {
+                    setFavourites(papers);
+                    setFetching(false);
+                });
         } else {
-            this.setState({ favouritePapers: [], fetching: false });
+            setFavourites([]);
+            setFetching(false);
         }
-    }
+    }, [favouriteIds]);
 
-    componentDidMount() {
-        Settings.getFavourites()
-            .then(favouriteIds => this.updateFavourites(favouriteIds));
-
-        this.favouriteListener = Settings.addEventListener('favourites-updated', favouriteIds => this.updateFavourites(favouriteIds));
-    }
-
-    componentWillUnmount() {
-        if (this.favouriteListener) {
-            this.favouriteListener.remove();
-        }
-    }
-
-    render() {
-        if (this.state.favouritePapers.length > 0 || this.state.fetching) {
-            return (
-                <View style={styles.container}>
-                    <ArxivPaperFlatList
-                        data={this.state.favouritePapers}
-                        refreshing={this.state.fetching}
-                        navigation={this.props.navigation}
-                    />
-                </View>
-            );
-        } else {
-            return (
-                <View style={styles.container}>
-                    <Text style={{ fontStyle: 'italic', padding: 8 }}>No favourites added</Text>
-                    <Text style={{ fontStyle: 'italic', paddingLeft: 8, paddingRight: 8 }}>Add a paper as a favourite by tapping the star icon</Text>
-                </View>
-            );
-        }
+    if (favourites.length > 0 || fetching) {
+        return (
+            <View style={styles.container}>
+                <ArxivPaperFlatList
+                    data={favourites}
+                    refreshing={fetching}
+                    navigation={props.navigation}
+                />
+            </View>
+        );
+    } else {
+        return (
+            <View style={styles.container}>
+                <Text style={{ fontStyle: 'italic', padding: 8 }}>No favourites added</Text>
+                <Text style={{ fontStyle: 'italic', paddingLeft: 8, paddingRight: 8 }}>Add a paper as a favourite by tapping the star icon</Text>
+            </View>
+        );
     }
 }
 

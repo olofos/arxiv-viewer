@@ -1,45 +1,33 @@
-import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import AppLoading from 'expo-app-loading';
-import { Asset } from 'expo-asset';
-import * as Font from 'expo-font';
-import * as Icon from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
-import MainTabNavigator from './navigation/MainTabNavigator';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import MainTabNavigator from './src/navigation/MainTabNavigator';
+
+import Colors from './src/constants/Colors';
+
+const Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: Colors.tintColor,
+  },
+};
 
 export default function App() {
-    const [appIsReady, setAppIsReady] = useState(false);
-
-    if (!appIsReady) {
-        return <AppLoading
-            startAsync={async () => (
-                Promise.all([
-                    Asset.loadAsync([
-                    ]),
-                    Font.loadAsync({
-                        ...Icon.Ionicons.font,
-                    }),
-                ]))}
-            onError={(error) => {
-                console.warn(error);
-            }}
-            onFinish={() => {
-                setAppIsReady(true);
-            }}
-        />;
-    } else {
-        return (
-            <View style={styles.container}>
-                {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-                <MainTabNavigator />
-            </View>
-        );
-    }
+  return (
+    <NavigationContainer theme={Theme}>
+      <StatusBar style='light' />
+      <MainTabNavigator />
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

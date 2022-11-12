@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     ScrollView,
     StyleSheet,
@@ -8,62 +8,80 @@ import {
     Linking,
 } from 'react-native';
 
-import { Icon } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 
 import MathJax from '../components/MathJax';
+import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
-import Settings from '../util/Settings';
+import Settings, { useFavourites } from '../util/Settings';
 import Arxiv from '../util/Arxiv';
 
-class PaperSummary extends React.Component {
-    render() {
-        const { useMathJax, summary } = this.props;
-        if (!useMathJax) {
-            return (
-                <View style={styles.box}>
-                    <Text style={styles.paperSummary}>{summary}</Text>
-                </View >
-            );
-        } else {
-            return (
-                <View style={[styles.box, { paddingLeft: 4, flex: 1 }]}>
-                    <MathJax
-                        // HTML content with MathJax support
-                        html={(`<p style="font-size:12pt;padding:0px;margin:0px">${summary}</p>`)}
-                        // MathJax config option
-                        mathJaxOptions={{
-                            messageStyle: 'none',
-                            extensions: ['tex2jax.js'],
-                            jax: ['input/TeX', 'output/HTML-CSS'],
-                            tex2jax: {
-                                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                                processEscapes: true,
-                            },
-                            TeX: {
-                                extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js'],
-                            },
-                        }}
-                        style={{ paddingLeft: 0, margin: 0, flex: 1 }}
-                    />
-                </View>
-            );
-        }
+function PaperSummary({ useMathJax, summary }) {
+    if (!useMathJax) {
+        return (
+            <View style={styles.box}>
+                <Text style={styles.paperSummary}>{summary}</Text>
+            </View >
+        );
+    } else {
+        return (
+            <View style={[styles.box, { paddingLeft: 4, flex: 1 }]}>
+                <MathJax
+                    // HTML content with MathJax support
+                    html={(`<p style="font-size:12pt;padding:0px;margin:0px">${summary}</p>`)}
+                    // MathJax config option
+                    mathJaxOptions={{
+                        messageStyle: 'none',
+                        extensions: ['tex2jax.js'],
+                        jax: ['input/TeX', 'output/HTML-CSS'],
+                        tex2jax: {
+                            inlineMath: [['$', '$'], ['\\(', '\\)']],
+                            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                            processEscapes: true,
+                        },
+                        TeX: {
+                            extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js'],
+                        },
+                    }}
+                    style={{ paddingLeft: 0, margin: 0, flex: 1 }}
+                />
+            </View>
+        );
     }
 }
 
-const CustomHeader = ({ title, subtitle }) => (
-    <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>{title}</Text>
-        <Text style={styles.headerSubtitle}>{subtitle}</Text>
-    </View>
-);
+export default function PaperScreen({ navigation, route }) {
+    const [useMathJax, setUseMathJax] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
-export default class PaperScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        const { item } = navigation.state.params;
-        return {
-            headerTitle: () => CustomHeader({ title: item.id, subtitle: item.category }),
+    const { item } = route.params;
+    const id = Arxiv.baseId(item.id);
+    const favourites = useFavourites();
+    const isFavourite = !!favourites.find(elem => elem === id)
+
+
+    useEffect(() => {
+        const promiseMJ = Settings.getConfig('useMathJax')
+            .then((useMathJax) => {
+                setUseMathJax(useMathJax);
+            });
+
+        Promise.all([
+            promiseMJ,
+        ])
+            .then(() => setLoaded(true));
+    }, []);
+
+    const updateUseMathJax = useCallback((config) => setUseMathJax(config.useMathJax));
+
+    useEffect(() => {
+        const subscription = Settings.addEventListener('config-updated', updateUseMathJax);
+        return () => subscription.remove();
+    }, []);
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerTitle: () => <TitleSubtitleHeader title={Arxiv.baseId(item.id)} subtitle={item.category} />,
             headerRight: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
@@ -71,98 +89,68 @@ export default class PaperScreen extends React.Component {
                             const id = Arxiv.baseId(item.id);
                             Settings.toggleFavourite(id);
                         }}>
-                        <Icon
-                            containerStyle={{ flex: 0, marginRight: 8 }}
-                            color='#fff'
-                            size={24}
-                            type='material'
-                            name={navigation.state.params.isFavourite ? 'star' : 'star-border'}
-                        />
+                        <View style={{ flex: 0, marginRight: 14 }}>
+                            <Ionicons
+                                color='#fff'
+                                size={24}
+                                name={isFavourite ? 'star' : 'star-outline'}
+                            />
+                        </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => {
                         Settings.getConfig('openPDFInBrowser').then((browser) => {
-                            console.log(browser);
                             if (browser) {
                                 Linking.openURL(`https://arxiv.org/pdf/${item.id}`);
                             } else {
-                                navigation.navigate('PDF', item);
+                                navigation.navigate('PDFScreen', item);
                             }
                         });
                     }}>
                         <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
                     </TouchableOpacity>
                 </View>
-            ),
-        };
-    };
+            )
+        })
+    }, [isFavourite])
 
-    constructor() {
-        super();
-        this.state = { loaded: false, useMathJax: false };
+    if (!loaded) {
+        return null;
     }
 
-    checkFavourite(favourites) {
-        const { item } = this.props.navigation.state.params;
-        const id = Arxiv.baseId(item.id);
-        const isFavourite = !!favourites.find(elem => elem === id);
-        this.props.navigation.setParams({ isFavourite });
-        this.forceUpdate();
-    }
+    return (
+        // The app crashes if the webview is rendered off screen. removeClippedSubviews={true} prevents this
+        <ScrollView style={styles.paperContainer} removeClippedSubviews={true}>
+            <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
+            <View style={[styles.box, { flex: 1 }]}>
+                {item.authors.map((name, index) => <Text key={index} style={styles.paperAuthor}>{name}</Text>)}
+            </View>
 
-    componentDidMount() {
-        Settings.getConfig('useMathJax')
-            .then((useMathJax) => {
-                this.setState({ useMathJax, loaded: true });
-            });
+            <PaperSummary
+                useMathJax={useMathJax}
+                summary={item.summary}
+            />
+            {item.comment ? <Text style={[styles.box, styles.paperComment]}>Comments: {item.comment}</Text> : null}
 
-        Settings.getFavourites()
-            .then(favourites => this.checkFavourite(favourites));
+            <TouchableOpacity onPress={() => { Linking.openURL(`https://arxiv.org/abs/${item.id}`); }}>
+                <View style={[styles.box, { flexDirection: 'row', justifyContent: 'center' }]}>
+                    <Text style={{ flex: 1, alignSelf: 'center' }}>
+                        Open arxiv page in browser
+                    </Text>
 
-        this.favouriteListener = Settings.addEventListener('favourites-updated', favourites => this.checkFavourite(favourites));
-    }
-
-    componentWillUnmount() {
-        if (this.favouriteListener) {
-            this.favouriteListener.remove();
-        }
-    }
-
-    render() {
-        const { item } = this.props.navigation.state.params;
-        if (!this.state.loaded) {
-            return null;
-        }
-        return (
-            <ScrollView style={styles.paperContainer}>
-                <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
-                <View style={[styles.box, { flex: 1 }]}>
-                    {item.authors.map((name, index) => <Text key={index} style={styles.paperAuthor}>{name}</Text>)}
-                </View>
-
-                <PaperSummary
-                    useMathJax={this.state.useMathJax}
-                    summary={item.summary}
-                />
-                {item.comment ? <Text style={[styles.box, styles.paperComment]}>Comments: {item.comment}</Text> : null}
-
-                <TouchableOpacity onPress={() => { Linking.openURL(`https://arxiv.org/abs/${item.id}`); }}>
-                    <View style={[styles.box, { flexDirection: 'row', justifyContent: 'center' }, this.props.style]}>
-                        <Text style={{ flex: 1, alignSelf: 'center' }}>
-                            Open arxiv page in browser
-                        </Text>
-
-                        <Icon type='material' name='chevron-right' color='#aaa' containerStyle={{
-                            flex: 0,
-                            marginRight: 15,
-                            alignSelf: 'center',
-                        }} />
+                    <View style={{
+                        flex: 0,
+                        marginRight: 15,
+                        alignSelf: 'center',
+                    }}>
+                        <Ionicons name='chevron-forward' color='#aaa' size={16} />
                     </View>
-                </TouchableOpacity>
-            </ScrollView >
-        );
-    }
+                </View>
+            </TouchableOpacity>
+        </ScrollView >
+    );
 }
+
 
 const styles = StyleSheet.create({
     box: {
@@ -191,7 +179,7 @@ const styles = StyleSheet.create({
     paperTitle: {
         padding: 4,
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '500',
     },
 
     paperSummary: {
@@ -201,30 +189,9 @@ const styles = StyleSheet.create({
     paperComment: {
     },
 
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        marginBottom: 2,
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#ccc',
-    },
     item: {
         paddingTop: 2,
         paddingBottom: 2,
         fontSize: 12,
-    },
-
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-
-    headerSubtitle: {
-        fontSize: 12,
-        color: '#fff',
     },
 });

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MathJax from '../components/MathJax';
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
-import Settings, { useFavourites } from '../util/Settings';
+import Settings, { useIsFavouriteWithToggle } from '../util/Settings';
 import Arxiv from '../util/Arxiv';
 
 function PaperSummary({ useMathJax, summary }) {
@@ -53,14 +53,10 @@ function PaperSummary({ useMathJax, summary }) {
     );
 }
 
-function HeaderButtons({ id, isFavourite, navigation, item }) {
+function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
     return (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity
-                onPress={() => {
-                    Settings.toggleFavourite(id);
-                }}
-            >
+            <TouchableOpacity onPress={toggleFavourite}>
                 <View style={{ flex: 0, marginRight: 14 }}>
                     <Ionicons color="#fff" size={24} name={isFavourite ? 'star' : 'star-outline'} />
                 </View>
@@ -89,8 +85,7 @@ export default function PaperScreen({ navigation, route }) {
 
     const { item } = route.params;
     const id = Arxiv.baseId(item.id);
-    const favourites = useFavourites();
-    const isFavourite = !!favourites.find((elem) => elem === id);
+    const [isFavourite, toggleFavourite] = useIsFavouriteWithToggle(id);
 
     useEffect(() => {
         const promiseMJ = Settings.getConfig('useMathJax').then((newUseMathJax) => {
@@ -118,14 +113,14 @@ export default function PaperScreen({ navigation, route }) {
             // eslint-disable-next-line react/no-unstable-nested-components
             headerRight: () => (
                 <HeaderButtons
-                    id={id}
                     item={item}
                     navigation={navigation}
                     isFavourite={isFavourite}
+                    toggleFavourite={toggleFavourite}
                 />
             ),
         });
-    }, [isFavourite, item, navigation, id]);
+    }, [item, navigation, isFavourite, toggleFavourite]);
 
     if (!loaded) {
         return null;

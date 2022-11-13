@@ -12,17 +12,21 @@ export default function FavouritesListScreen({ ...props }) {
     const favouriteIds = useFavourites();
 
     useEffect(() => {
+        const currentIds = favourites.map((entry) => Arxiv.baseId(entry.id));
+        const newIds = favouriteIds.filter((id) => !currentIds.find((elem) => elem === id));
+        const extraIds = currentIds.filter((id) => !favouriteIds.find((entry) => entry === id));
+
+        if (newIds.length === 0 && extraIds.length === 0) return;
+
         setFetching(true);
-        if (favouriteIds.length > 0) {
-            Arxiv.fetchPapersById(favouriteIds).then((papers) => {
-                setFavourites(papers);
-                setFetching(false);
-            });
-        } else {
-            setFavourites([]);
+        const filteredFavourites = favourites.filter(
+            (_, index) => !extraIds.find((id) => currentIds[index] === id)
+        );
+        Arxiv.fetchPapersById(newIds).then((newFavourites) => {
+            setFavourites([...newFavourites, ...filteredFavourites]);
             setFetching(false);
-        }
-    }, [favouriteIds]);
+        });
+    }, [favouriteIds, favourites]);
 
     if (favourites.length > 0 || fetching) {
         return (

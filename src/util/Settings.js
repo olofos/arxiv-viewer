@@ -37,24 +37,11 @@ export default class Settings {
             .then((favourites) => favourites || []);
     }
 
-    static toggleFavourite(id) {
-        return Settings.getFavourites()
-            .then((favourites) => {
-                const index = favourites.findIndex((elem) => elem === id);
-                let newFavourites;
-                if (index >= 0) {
-                    newFavourites = [...favourites.slice(0, index), ...favourites.slice(index + 1)];
-                } else {
-                    newFavourites = [id, ...favourites];
-                }
-                return AsyncStorage.setItem('favourites', JSON.stringify(newFavourites)).then(
-                    () => newFavourites
-                );
-            })
-            .then((favourites) => {
-                eventEmitter.emit('favourites-updated', favourites);
-                return favourites;
-            });
+    static setFavourites(newFavourites) {
+        AsyncStorage.setItem('favourites', JSON.stringify(newFavourites)).then(() => {
+            eventEmitter.emit('favourites-updated', newFavourites);
+            return newFavourites;
+        });
     }
 
     static addEventListener(eventName, handler) {
@@ -62,7 +49,7 @@ export default class Settings {
     }
 }
 
-function useFavourites() {
+export function useFavourites() {
     const [favourites, setFavourites] = useState([]);
 
     useEffect(() => {
@@ -79,4 +66,36 @@ function useFavourites() {
     return favourites;
 }
 
-export { useFavourites };
+export function useIsFavourite(id) {
+    const favourites = useFavourites();
+    return !!favourites.find((elem) => elem === id);
+}
+
+export function useIsFavouriteWithToggle(id) {
+    const [favourites, setFavourites] = useState([]);
+
+    useEffect(() => {
+        Settings.getFavourites().then((newFavourites) => setFavourites(newFavourites));
+    }, []);
+
+    useEffect(() => {
+        const subscription = Settings.addEventListener('favourites-updated', (newFavourites) =>
+            setFavourites(newFavourites)
+        );
+        return () => subscription.remove();
+    }, []);
+
+    const isFavourite = !!favourites.find((elem) => elem === id);
+    const toggleFavourite = () => {
+        if (isFavourite) {
+            const newFavourites = favourites.filter((elem) => elem !== id);
+            setFavourites(newFavourites);
+            Settings.setFavourites(newFavourites);
+        } else {
+            const newFavourites = [id, ...favourites];
+            setFavourites(newFavourites);
+            Settings.setFavourites(newFavourites);
+        }
+    };
+    return [isFavourite, toggleFavourite];
+}

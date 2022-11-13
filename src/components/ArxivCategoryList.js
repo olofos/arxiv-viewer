@@ -1,29 +1,29 @@
 import React, { useEffect, useRef } from 'react';
 
-import {
-    SectionList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
 import Arxiv from '../util/Arxiv';
 
-function ArxivCategoryItem(props) {
+function ArxivCategoryItem({ item, ...props }) {
     return (
-        <TouchableOpacity onPress={() => props.onPress(props.item)}>
-            <View style={[
-                styles.itemRow,
-                {
-                    backgroundColor: props.index % 2 === 1 ? '#eee' : '#fff',
-                    paddingLeft: (props.item.category.indexOf('.') > 0) ? 8 : 0
-                }
-            ]} >
-                <View><Text style={styles.itemCategory}>{props.item.category}</Text></View>
-                <View><Text style={styles.itemName}>{props.item.name}</Text></View>
+        <TouchableOpacity onPress={() => props.onPress(item)}>
+            <View
+                style={[
+                    styles.itemRow,
+                    {
+                        backgroundColor: props.index % 2 === 1 ? '#eee' : '#fff',
+                        paddingLeft: item.category.indexOf('.') > 0 ? 8 : 0,
+                    },
+                ]}
+            >
+                <View>
+                    <Text style={styles.itemCategory}>{item.category}</Text>
+                </View>
+                <View>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                </View>
             </View>
         </TouchableOpacity>
     );
@@ -32,20 +32,22 @@ function ArxivCategoryItem(props) {
 export default function ArxivCategoryList({ defaultCategory, ...props }) {
     const sections = Arxiv.categories;
 
-    const getSectionIndex = (category) => {
-        const sectionIndex = sections.findIndex(sect => sect.data.findIndex(cat => cat.category === category) >= 0);
-        if (sectionIndex >= 0) {
-            const itemIndex = sections[sectionIndex].data.findIndex(cat => cat.category === category);
-            return { sectionIndex, itemIndex };
-        }
-        return { sectionIndex: 0, itemIndex: 0 };
-    }
-
     const sectionListRef = useRef(null);
 
     useEffect(() => {
-        sectionListRef.current.scrollToLocation({ ...getSectionIndex(defaultCategory), animated: true });
-    }, [defaultCategory]);
+        let index = { sectionIndex: 0, itemIndex: 0 };
+        const sectionIndex = sections.findIndex(
+            (sect) => sect.data.findIndex((cat) => cat.category === defaultCategory) >= 0
+        );
+        if (sectionIndex >= 0) {
+            const itemIndex = sections[sectionIndex].data.findIndex(
+                (cat) => cat.category === defaultCategory
+            );
+            index = { sectionIndex, itemIndex };
+        }
+
+        sectionListRef.current.scrollToLocation({ ...index, animated: true });
+    }, [defaultCategory, sections]);
 
     const getItemLayout = sectionListGetItemLayout({
         getItemHeight: () => styles.itemRow.height,
@@ -66,9 +68,8 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
             )}
             keyExtractor={(item, index) => index}
             stickySectionHeadersEnabled={false}
-
             getItemLayout={getItemLayout}
-            onScrollToIndexFailed={() => { }}
+            onScrollToIndexFailed={() => {}}
             ref={sectionListRef}
         />
     );

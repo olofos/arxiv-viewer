@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import {
-    SectionList,
-    StyleSheet,
-    Text,
-    View,
-    RefreshControl,
-} from 'react-native';
+import React from 'react';
+import { SectionList, StyleSheet, Text, View, RefreshControl } from 'react-native';
 
 import ArxivPaperBrief from './ArxivPaperBrief';
 import { useFavourites } from '../util/Settings';
 import Arxiv from '../util/Arxiv';
 import Colors from '../constants/Colors';
 
-
-export default function ArxivPaperSectionList(props) {
+export default function ArxivPaperSectionList({ ...props }) {
     const favourites = useFavourites();
 
     return (
         <SectionList
             sections={props.sections}
-
             renderItem={({ item, index }) => {
                 if (item.id) {
                     const id = Arxiv.baseId(item.id);
@@ -27,39 +19,38 @@ export default function ArxivPaperSectionList(props) {
                         <ArxivPaperBrief
                             item={item}
                             index={index}
-                            isFavourite={!!favourites.find(elem => elem === id)}
+                            isFavourite={!!favourites.find((elem) => elem === id)}
                             onPress={() => {
                                 props.navigation.navigate('PaperScreen', { item });
                             }}
                         />
                     );
-                } else {
-                    return <View style={styles.paperContainer}><Text style={{ fontStyle: 'italic' }}>No new papers</Text></View>;
                 }
+                return (
+                    <View style={styles.paperContainer}>
+                        <Text style={{ fontStyle: 'italic' }}>No new papers</Text>
+                    </View>
+                );
             }}
-
-            renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-
+            renderSectionHeader={({ section }) => (
+                <Text style={styles.sectionHeader}>{section.title}</Text>
+            )}
             keyExtractor={(item, index) => index}
-
             onEndReachedThreshold={1}
             onEndReached={() => {
                 if (props.onEndReached) {
                     props.onEndReached();
                 }
             }}
-
             onViewableItemsChanged={(data) => {
                 if (props.onViewableItemsChanged) {
                     props.onViewableItemsChanged(data);
                 }
             }}
-
             viewabilityConfig={{
                 itemVisiblePercentThreshold: 50,
                 waitForInteraction: false,
             }}
-
             refreshControl={
                 <RefreshControl
                     colors={[Colors.tintColor]}

@@ -7,8 +7,14 @@ const defaultOptions = {
     extensions: ['tex2jax.js'],
     jax: ['input/TeX', 'output/HTML-CSS'],
     tex2jax: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        inlineMath: [
+            ['$', '$'],
+            ['\\(', '\\)'],
+        ],
+        displayMath: [
+            ['$$', '$$'],
+            ['\\[', '\\]'],
+        ],
         processEscapes: true,
     },
     TeX: {
@@ -16,7 +22,7 @@ const defaultOptions = {
     },
 };
 
-export default function MathJax(props) {
+export default function MathJax({ ...props }) {
     const [height, setHeight] = useState(1);
 
     const handleMessage = useCallback((message) => {
@@ -45,12 +51,7 @@ export default function MathJax(props) {
 
     return (
         <View style={{ height, ...props.style }}>
-            <WebView
-                scrollEnabled={false}
-                onMessage={handleMessage}
-                source={{ html }}
-                {...props}
-            />
+            <WebView scrollEnabled={false} onMessage={handleMessage} source={{ html }} {...props} />
         </View>
     );
 }

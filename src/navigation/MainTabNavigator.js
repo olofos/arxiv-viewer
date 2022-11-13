@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -13,41 +12,47 @@ const Tab = createBottomTabNavigator();
 
 export default function MainTabNavigator() {
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false, }}>
+        <Tab.Navigator screenOptions={{ headerShown: false }}>
             <Tab.Screen
-                name='NewStack'
+                name="NewStack"
                 component={NewStack}
                 options={{
                     title: 'New',
-                    tabBarIcon: ({ focused }) =>
-                        <TabBarIcon name='pulse' focused={focused} />
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    tabBarIcon: ({ focused }) => <TabBarIcon name="pulse" focused={focused} />,
                 }}
             />
             <Tab.Screen
-                name='RecentStack'
+                name="RecentStack"
                 component={RecentStack}
                 options={{
                     title: 'Recent',
-                    tabBarIcon: ({ focused }) =>
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    tabBarIcon: ({ focused }) => (
                         <TabBarIcon name={focused ? 'time' : 'time-outline'} focused={focused} />
+                    ),
                 }}
             />
             <Tab.Screen
-                name='FavouritesStack'
+                name="FavouritesStack"
                 component={FavouritesStack}
                 options={{
                     title: 'Favourite',
-                    tabBarIcon: ({ focused }) =>
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    tabBarIcon: ({ focused }) => (
                         <TabBarIcon name={focused ? 'star' : 'star-outline'} focused={focused} />
-                }} />
+                    ),
+                }}
+            />
             <Tab.Screen
-                name='SettingsStack'
+                name="SettingsStack"
                 component={SettingsStack}
                 options={{
                     title: 'Settings',
-                    tabBarIcon: ({ focused }) =>
-                        <TabBarIcon name='options' focused={focused} />
-                }} />
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    tabBarIcon: ({ focused }) => <TabBarIcon name="options" focused={focused} />,
+                }}
+            />
         </Tab.Navigator>
     );
 }

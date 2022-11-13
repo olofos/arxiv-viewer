@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import Arxiv from '../util/Arxiv';
-import Settings, { useFavourites } from '../util/Settings';
+import { useFavourites } from '../util/Settings';
 import ArxivPaperFlatList from '../components/ArxivPaperFlatList';
 
-
-export default function FavouritesListScreen(props) {
+export default function FavouritesListScreen({ ...props }) {
     const [favourites, setFavourites] = useState([]);
     const [fetching, setFetching] = useState(false);
 
@@ -19,11 +14,10 @@ export default function FavouritesListScreen(props) {
     useEffect(() => {
         setFetching(true);
         if (favouriteIds.length > 0) {
-            Arxiv.fetchPapersById(favouriteIds)
-                .then(papers => {
-                    setFavourites(papers);
-                    setFetching(false);
-                });
+            Arxiv.fetchPapersById(favouriteIds).then((papers) => {
+                setFavourites(papers);
+                setFetching(false);
+            });
         } else {
             setFavourites([]);
             setFetching(false);
@@ -40,14 +34,16 @@ export default function FavouritesListScreen(props) {
                 />
             </View>
         );
-    } else {
-        return (
-            <View style={styles.container}>
-                <Text style={{ fontStyle: 'italic', padding: 8 }}>No favourites added</Text>
-                <Text style={{ fontStyle: 'italic', paddingLeft: 8, paddingRight: 8 }}>Add a paper as a favourite by tapping the star icon</Text>
-            </View>
-        );
     }
+
+    return (
+        <View style={styles.container}>
+            <Text style={{ fontStyle: 'italic', padding: 8 }}>No favourites added</Text>
+            <Text style={{ fontStyle: 'italic', paddingLeft: 8, paddingRight: 8 }}>
+                Add a paper as a favourite by tapping the star icon
+            </Text>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

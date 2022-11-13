@@ -27,7 +27,7 @@ export default function MathJax({ ...props }) {
 
     const handleMessage = useCallback((message) => {
         setHeight(Number(message.nativeEvent.data));
-    });
+    }, []);
 
     const options = JSON.stringify({ ...defaultOptions, ...props.mathJaxOptions });
 
@@ -48,10 +48,9 @@ export default function MathJax({ ...props }) {
                 ${props.html}
             </div>
         `;
-
     return (
         <View style={{ height, ...props.style }}>
-            <WebView scrollEnabled={false} onMessage={handleMessage} source={{ html }} {...props} />
+            <WebView scrollEnabled={false} onMessage={handleMessage} source={{ html }} />
         </View>
     );
 }

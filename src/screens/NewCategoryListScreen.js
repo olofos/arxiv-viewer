@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {
-    StyleSheet,
-    View,
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import ArxivCategoryList from '../components/ArxivCategoryList';
 import Settings from '../util/Settings';
 
-export default function NewCategoryListScreen(props) {
+export default function NewCategoryListScreen({ ...props }) {
     const [defaultCategory, setDefaultCategory] = useState();
 
     useEffect(() => {
-        Settings.getConfig('defaultCategory')
-            .then(category => setDefaultCategory(category));
+        Settings.getConfig('defaultCategory').then((category) => setDefaultCategory(category));
     }, []);
 
     const goToCategory = (cat) => {
@@ -20,13 +16,13 @@ export default function NewCategoryListScreen(props) {
         if (cat.category) {
             props.navigation.navigate('NewListScreen', cat);
         }
-    }
+    };
     return (
         <View style={styles.container}>
             <ArxivCategoryList
                 defaultCategory={defaultCategory}
                 navigation={props.navigation}
-                onPress={item => goToCategory(item)}
+                onPress={(item) => goToCategory(item)}
             />
         </View>
     );

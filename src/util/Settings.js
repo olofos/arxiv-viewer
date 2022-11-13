@@ -23,10 +23,10 @@ export default class Settings {
 
     static setConfig(key, value) {
         return Settings.getConfig().then((config) => {
-            config[key] = value;
-            return AsyncStorage.setItem('config', JSON.stringify(config)).then(() => {
-                eventEmitter.emit('config-updated', config);
-                return config;
+            const newConfig = { ...config, [key]: value };
+            return AsyncStorage.setItem('config', JSON.stringify(newConfig)).then(() => {
+                eventEmitter.emit('config-updated', newConfig);
+                return newConfig;
             });
         });
     }

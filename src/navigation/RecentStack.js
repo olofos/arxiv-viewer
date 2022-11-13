@@ -12,11 +12,26 @@ const Stack = createNativeStackNavigator();
 
 export default function RecentStack() {
     return (
-        <Stack.Navigator initialRouteName='SettingsScreen' screenOptions={{ headerStyle: { backgroundColor: Colors.tintColor, color: '#fff' }, headerTintColor: '#fff' }}>
-            <Stack.Screen name='RecentCategoryListScreen' component={RecentCategoryListScreen} options={{ headerTitle: () => <TitleSubtitleHeader title={'Recent Papers'} subtitle={'Pick a category'} /> }} />
-            <Stack.Screen name='RecentListScreen' component={RecentListScreen} />
-            <Stack.Screen name='PaperScreen' component={PaperScreen} />
-            <Stack.Screen name='PDFScreen' component={PDFScreen} />
+        <Stack.Navigator
+            initialRouteName="SettingsScreen"
+            screenOptions={{
+                headerStyle: { backgroundColor: Colors.tintColor, color: '#fff' },
+                headerTintColor: '#fff',
+            }}
+        >
+            <Stack.Screen
+                name="RecentCategoryListScreen"
+                component={RecentCategoryListScreen}
+                options={{
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    headerTitle: () => (
+                        <TitleSubtitleHeader title="Recent Papers" subtitle="Pick a category" />
+                    ),
+                }}
+            />
+            <Stack.Screen name="RecentListScreen" component={RecentListScreen} />
+            <Stack.Screen name="PaperScreen" component={PaperScreen} />
+            <Stack.Screen name="PDFScreen" component={PDFScreen} />
         </Stack.Navigator>
     );
 }

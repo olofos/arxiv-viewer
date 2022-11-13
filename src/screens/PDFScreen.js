@@ -5,27 +5,27 @@ import { WebView } from 'react-native-webview';
 import Colors from '../constants/Colors';
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
-
 export default function PDFScreen({ navigation, route }) {
     const item = route.params;
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitle: () => <TitleSubtitleHeader title={item.id} subtitle={item.category} />
-        })
+            // eslint-disable-next-line react/no-unstable-nested-components
+            headerTitle: () => <TitleSubtitleHeader title={item.id} subtitle={item.category} />,
+        });
     });
 
     return (
         <View style={{ flex: 1 }}>
             <WebView
-                source={{ uri: `https://drive.google.com/viewerng/viewer?embedded=true&url=https://arxiv.org/pdf/${item.id}.pdf` }}
+                source={{
+                    uri: `https://drive.google.com/viewerng/viewer?embedded=true&url=https://arxiv.org/pdf/${item.id}.pdf`,
+                }}
                 style={{}}
-                startInLoadingState={true}
-                renderLoading={() => <ActivityIndicator
-                    style={{ flex: 1 }}
-                    size='large'
-                    color={Colors.tintColor}
-                />}
+                startInLoadingState
+                renderLoading={() => (
+                    <ActivityIndicator style={{ flex: 1 }} size="large" color={Colors.tintColor} />
+                )}
                 onError={(syntheticEvent) => {
                     const { nativeEvent } = syntheticEvent;
                     console.warn('WebView error: ', nativeEvent);

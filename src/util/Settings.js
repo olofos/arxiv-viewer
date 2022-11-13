@@ -8,50 +8,48 @@ const defaultConfig = { defaultCategory: null, useMathJax: true };
 
 const eventEmitter = new EventEmitter();
 
-
 export default class Settings {
     static getConfig(key) {
         return AsyncStorage.getItem('config')
             .then(JSON.parse)
-            .then(config => config || defaultConfig)
+            .then((config) => config || defaultConfig)
             .then((config) => {
                 if (key) {
                     return config[key];
-                } else {
-                    return config;
                 }
+                return config;
             });
     }
 
     static setConfig(key, value) {
-        return Settings.getConfig()
-            .then((config) => {
-                config[key] = value;
-                return AsyncStorage.setItem('config', JSON.stringify(config))
-                    .then(() => {
-                        eventEmitter.emit('config-updated', config);
-                        return config;
-                    });
+        return Settings.getConfig().then((config) => {
+            config[key] = value;
+            return AsyncStorage.setItem('config', JSON.stringify(config)).then(() => {
+                eventEmitter.emit('config-updated', config);
+                return config;
             });
+        });
     }
 
     static getFavourites() {
         return AsyncStorage.getItem('favourites')
             .then(JSON.parse)
-            .then(favourites => favourites || []);
+            .then((favourites) => favourites || []);
     }
 
     static toggleFavourite(id) {
         return Settings.getFavourites()
             .then((favourites) => {
-                const index = favourites.findIndex(elem => elem === id);
+                const index = favourites.findIndex((elem) => elem === id);
                 let newFavourites;
                 if (index >= 0) {
                     newFavourites = [...favourites.slice(0, index), ...favourites.slice(index + 1)];
                 } else {
                     newFavourites = [id, ...favourites];
                 }
-                return AsyncStorage.setItem('favourites', JSON.stringify(newFavourites)).then(() => newFavourites);
+                return AsyncStorage.setItem('favourites', JSON.stringify(newFavourites)).then(
+                    () => newFavourites
+                );
             })
             .then((favourites) => {
                 eventEmitter.emit('favourites-updated', favourites);
@@ -68,16 +66,17 @@ function useFavourites() {
     const [favourites, setFavourites] = useState([]);
 
     useEffect(() => {
-        Settings.getFavourites()
-            .then((favourites) => setFavourites(favourites));
+        Settings.getFavourites().then((newFavourites) => setFavourites(newFavourites));
     }, []);
 
     useEffect(() => {
-        const subscription = Settings.addEventListener('favourites-updated', (favourites) => setFavourites(favourites));
+        const subscription = Settings.addEventListener('favourites-updated', (newFavourites) =>
+            setFavourites(newFavourites)
+        );
         return () => subscription.remove();
     }, []);
 
     return favourites;
-};
+}
 
 export { useFavourites };

@@ -12,49 +12,61 @@ function parseRSSItemId(item, mainCategory) {
     const regexp = /\(arXiv:([^ ]*) \[([^\]]*)\] ?([A-Z]*)/;
 
     const matches = title.match(regexp);
-    if (matches) {
-        const id = matches[1];
-        const category = matches[2];
-        const info = matches[3];
-        let section = '';
-        if (info === 'UPDATED') {
-            section = 'updated';
-        } else if (compareCategories(mainCategory, category)) {
-            section = 'new';
-        } else {
-            section = 'crossListed';
-        }
-        return { id, section, mainCategory, category };
-    } else {
+    if (!matches) {
         return {};
     }
+
+    const id = matches[1];
+    const category = matches[2];
+    const info = matches[3];
+    let section = '';
+    if (info === 'UPDATED') {
+        section = 'updated';
+    } else if (compareCategories(mainCategory, category)) {
+        section = 'new';
+    } else {
+        section = 'crossListed';
+    }
+    return { id, section, mainCategory, category };
 }
 
 function parseAtomEntry(entry) {
-    if (entry.getElementsByTagName('id').length > 0) {
-        const title = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
-
-        if (title === 'Error') {
-            return null;
-        }
-
-        const idURL = entry.getElementsByTagName('id')[0].childNodes[0].nodeValue;
-        const updated = entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
-        const published = entry.getElementsByTagName('published')[0].childNodes[0].nodeValue;
-        const summary = entry.getElementsByTagName('summary')[0].childNodes[0].nodeValue.replace(/[\n\r]/g, ' ').trim();
-        const commentNode = entry.getElementsByTagName('arxiv:comment');
-        const comment = (commentNode && commentNode[0]) ? commentNode[0].childNodes[0].nodeValue.replace(/[\n\r ]+/g, ' ').trim() : '';
-        const category = entry.getElementsByTagName('category')[0].getAttribute('term');
-
-        const authorList = Array.from(entry.getElementsByTagName('author'));
-        const authors = authorList.reduce((acc, node) => { acc.push(node.getElementsByTagName('name')[0].childNodes[0].nodeValue); return acc; }, []);
-
-        const id = idURL.match(/http:\/\/arxiv.org\/abs\/(.*)/)[1];
-
-        return { id, updated, published, title, summary, comment, category, authors };
-    } else {
+    if (entry.getElementsByTagName('id').length === 0) {
         return null;
     }
+
+    const title = entry
+        .getElementsByTagName('title')[0]
+        .childNodes[0].nodeValue.replace(/[\n\r]/g, ' ')
+        .trim();
+
+    if (title === 'Error') {
+        return null;
+    }
+
+    const idURL = entry.getElementsByTagName('id')[0].childNodes[0].nodeValue;
+    const updated = entry.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
+    const published = entry.getElementsByTagName('published')[0].childNodes[0].nodeValue;
+    const summary = entry
+        .getElementsByTagName('summary')[0]
+        .childNodes[0].nodeValue.replace(/[\n\r]/g, ' ')
+        .trim();
+    const commentNode = entry.getElementsByTagName('arxiv:comment');
+    const comment =
+        commentNode && commentNode[0]
+            ? commentNode[0].childNodes[0].nodeValue.replace(/[\n\r ]+/g, ' ').trim()
+            : '';
+    const category = entry.getElementsByTagName('category')[0].getAttribute('term');
+
+    const authorList = Array.from(entry.getElementsByTagName('author'));
+    const authors = authorList.reduce((acc, node) => {
+        acc.push(node.getElementsByTagName('name')[0].childNodes[0].nodeValue);
+        return acc;
+    }, []);
+
+    const id = idURL.match(/http:\/\/arxiv.org\/abs\/(.*)/)[1];
+
+    return { id, updated, published, title, summary, comment, category, authors };
 }
 
 function parseRSS(text, category) {
@@ -63,7 +75,7 @@ function parseRSS(text, category) {
 
     const items = Array.from(xml.getElementsByTagName('item'));
 
-    const ids = items.map(item => parseRSSItemId(item, category));
+    const ids = items.map((item) => parseRSSItemId(item, category));
     return ids;
 }
 
@@ -72,17 +84,19 @@ function parseAtom(response) {
     const xml = parser.parseFromString(response, 'text/xml');
 
     const items = Array.from(xml.getElementsByTagName('entry'));
-    const papers = items.map(item => parseAtomEntry(item)).filter(paper => paper !== null);
+    const papers = items.map((item) => parseAtomEntry(item)).filter((paper) => paper !== null);
 
     return papers;
 }
 
-const categories = ArxivCategories.map(sect => (
-    {
-        title: sect.section,
-        data: sect.categories.map(cat => ({ text: `${cat.name} [${cat.category}]`, category: cat.category, name: cat.name })),
-    }
-));
+const categories = ArxivCategories.map((sect) => ({
+    title: sect.section,
+    data: sect.categories.map((cat) => ({
+        text: `${cat.name} [${cat.category}]`,
+        category: cat.category,
+        name: cat.name,
+    })),
+}));
 
 function isValidIdv1(str) {
     const regexp = /^[a-zA-Z-]+(\.[a-zA-Z]+)?\/([0-9]{2})([0-9]{2})[0-9]{3}$/;
@@ -117,8 +131,8 @@ export default class Arxiv {
     static fetchNew(category) {
         const url = `http://export.arxiv.org/rss/${category}`;
         return fetch(url)
-            .then(response => response.text())
-            .then(response => parseRSS(response, category))
+            .then((response) => response.text())
+            .then((response) => parseRSS(response, category))
             .catch((error) => {
                 console.error(error);
             });
@@ -128,8 +142,8 @@ export default class Arxiv {
         const query = `search_query=${category}&sortBy=submittedDate&sortOrder=descending&max_results=${max}&start=${start}`;
         const url = `https://export.arxiv.org/api/query?${query}`;
         return fetch(url)
-            .then(response => response.text())
-            .then(response => parseAtom(response))
+            .then((response) => response.text())
+            .then((response) => parseAtom(response))
             .catch((error) => {
                 console.error(error);
             });
@@ -137,24 +151,28 @@ export default class Arxiv {
 
     static fetchPapersById(ids, start = 0, max = null) {
         if (ids && ids.length > 0) {
-            const url = `https://export.arxiv.org/api/query?id_list=${ids.join(',')}&start=${start}&max_results=${max || ids.length}`;
+            const url = `https://export.arxiv.org/api/query?id_list=${ids.join(
+                ','
+            )}&start=${start}&max_results=${max || ids.length}`;
             console.log(url);
             return fetch(url)
-                .then(response => response.text())
-                .then(response => parseAtom(response))
+                .then((response) => response.text())
+                .then((response) => parseAtom(response))
                 .catch((error) => {
                     console.error(error);
                 });
-        } else {
-            return Promise.resolve([]);
         }
+        return Promise.resolve([]);
     }
 
     static fetchPapersBySearchQuery(query, start = 0, max = 25) {
         let queryString = '';
 
         if (query.ids) {
-            const ids = query.ids.split(/[\s,]/).filter(s => s.length > 0).map(Arxiv.makeCanonicalId);
+            const ids = query.ids
+                .split(/[\s,]/)
+                .filter((s) => s.length > 0)
+                .map(Arxiv.makeCanonicalId);
             queryString += `&id_list=${ids.map(encodeURIComponent).join(',')}`;
         }
 
@@ -180,14 +198,13 @@ export default class Arxiv {
             const url = `https://export.arxiv.org/api/query?start=${start}&max_results=${max}${queryString}`;
             console.log(url);
             return fetch(url)
-                .then(response => response.text())
-                .then(response => parseAtom(response))
+                .then((response) => response.text())
+                .then((response) => parseAtom(response))
                 .catch((error) => {
                     console.error(error);
                 });
-        } else {
-            return Promise.resolve([]);
         }
+        return Promise.resolve([]);
     }
 
     static baseId(id) {
@@ -196,15 +213,13 @@ export default class Arxiv {
 
         if (matches) {
             return matches[1];
-        } else {
-            return id;
         }
+        return id;
     }
 
     static isValidId(id) {
         return isValidIdv1(id) || isValidIdv2(id) || isValidIdv3(id);
     }
-
 
     static makeCanonicalId(id) {
         if (isValidIdv2(id) || isValidIdv3(id)) return id;

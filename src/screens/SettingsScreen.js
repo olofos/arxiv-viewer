@@ -16,49 +16,15 @@ import Arxiv from '../util/Arxiv';
 import Settings from '../util/Settings';
 
 function SettingsGroup({ ...props }) {
-    return (
-        <View
-            style={[
-                {
-                    marginTop: 16,
-                    backgroundColor: '#fff',
-                    borderTopWidth: 1,
-                    borderBottomWidth: 1,
-                    borderColor: '#bbb',
-                },
-                props.style,
-            ]}
-        >
-            {props.children}
-        </View>
-    );
+    return <View style={[styles.group, props.style]}>{props.children}</View>;
 }
 
 function SettingSwitch({ ...props }) {
     return (
-        <View
-            style={[
-                {
-                    marginLeft: 16,
-                    height: 50,
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    borderColor: '#bbb',
-                },
-                props.style,
-            ]}
-        >
-            <Text
-                style={{
-                    fontSize: 16,
-                    flex: 1,
-                    alignSelf: 'center',
-                }}
-            >
-                {props.title}
-            </Text>
+        <View style={[styles.switchContainer, props.style]}>
+            <Text style={styles.switchText}>{props.title}</Text>
             <Switch
-                style={{ marginRight: 15, flex: 1, justifyContent: 'center' }}
+                style={styles.switch}
                 value={props.value}
                 thumbColor={props.value ? '#00b386' : '#9b9b9b'}
                 trackColor={{ true: '#abe3d5', false: '#c7c7c7' }}
@@ -71,42 +37,14 @@ function SettingSwitch({ ...props }) {
 function SettingTouchable({ ...props }) {
     return (
         <TouchableHighlight onPress={() => props.onPress()} underlayColor="#b2dfdc">
-            <View
-                style={[
-                    {
-                        marginLeft: 16,
-                        height: 50,
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        borderColor: '#bbb',
-                    },
-                    props.style,
-                ]}
-            >
-                <Text style={{ fontSize: 16, flex: 1, alignSelf: 'center' }}>{props.title}</Text>
+            <View style={[styles.touchableContainer, props.style]}>
+                <Text style={styles.touchableText}>{props.title}</Text>
 
                 {props.subtitle ? (
-                    <Text
-                        style={{
-                            marginRight: 16,
-                            fontSize: 14,
-                            flex: 0,
-                            alignSelf: 'center',
-                            textAlign: 'right',
-                            color: '#aaa',
-                        }}
-                    >
-                        {props.subtitle}
-                    </Text>
+                    <Text style={styles.touchableSubtitle}>{props.subtitle}</Text>
                 ) : null}
 
-                <View
-                    style={{
-                        flex: 0,
-                        marginRight: 15,
-                        alignSelf: 'center',
-                    }}
-                >
+                <View style={styles.touchableIcon}>
                     <Ionicons name="chevron-forward" color="#aaa" size={16} />
                 </View>
             </View>
@@ -188,7 +126,7 @@ function SelectableFlatListModal({ ...props }) {
                             }}
                         >
                             <View style={{ width: 24 }} />
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', flex: 1 }}>
+                            <Text style={{ fontSize: 20, fontWeight: '500', flex: 1 }}>
                                 {props.title}
                             </Text>
                         </View>
@@ -203,6 +141,10 @@ function SelectableFlatListModal({ ...props }) {
             </View>
         </Modal>
     );
+}
+
+function SettingsDivider() {
+    return <View style={styles.divider} />;
 }
 
 export default function SettingsScreen({ navigation }) {
@@ -250,15 +192,17 @@ export default function SettingsScreen({ navigation }) {
                     onValueChange={(value) => updateConfig('useMathJax', value)}
                     value={config.useMathJax}
                     title="Use MathJax"
-                    style={{ borderBottomWidth: 1 }}
                 />
+
+                <SettingsDivider />
 
                 <SettingSwitch
                     onValueChange={(value) => updateConfig('openPDFInBrowser', value)}
                     value={config.openPDFInBrowser}
                     title="Open PDFs in external browser"
-                    style={{ borderBottomWidth: 1 }}
                 />
+
+                <SettingsDivider />
 
                 <SettingTouchable
                     onPress={() => setModalVisible(true)}
@@ -276,7 +220,7 @@ export default function SettingsScreen({ navigation }) {
 
             <View style={{ flex: 1 }} />
 
-            <SettingsGroup style={{ marginBottom: 16 }}>
+            <SettingsGroup style={{}}>
                 <SettingTouchable onPress={() => navigation.navigate('About')} title="About" />
             </SettingsGroup>
         </View>
@@ -287,5 +231,62 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#eee',
+        paddingBottom: 16,
+    },
+    group: {
+        marginTop: 16,
+        backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#d8d8d8',
+    },
+    switchContainer: {
+        marginLeft: 16,
+        height: 50,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        borderColor: '#d8d8d8',
+    },
+    switchText: {
+        fontSize: 16,
+        flex: 1,
+        alignSelf: 'center',
+    },
+    switch: {
+        marginRight: 15,
+        flex: 1,
+        justifyContent: 'center',
+    },
+    touchableContainer: {
+        marginLeft: 16,
+        height: 50,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        borderColor: '#d8d8d8',
+    },
+    touchableText: {
+        fontSize: 16,
+        flex: 1,
+        alignSelf: 'center',
+    },
+    touchableSubtitle: {
+        marginRight: 16,
+        fontSize: 14,
+        flex: 0,
+        alignSelf: 'center',
+        textAlign: 'right',
+        color: '#aaa',
+    },
+    touchableIcon: {
+        flex: 0,
+        marginRight: 15,
+        alignSelf: 'center',
+    },
+    divider: {
+        marginLeft: 16,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        borderColor: '#d8d8d8',
+        borderBottomWidth: 1,
     },
 });

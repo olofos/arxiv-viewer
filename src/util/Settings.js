@@ -4,7 +4,7 @@ import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import { useState, useEffect } from 'react';
 
-const defaultConfig = { defaultCategory: null, useMathJax: true };
+const defaultConfig = { defaultCategory: 'none', useMathJax: true, openPDFInBrowser: false };
 
 const eventEmitter = new EventEmitter();
 
@@ -47,6 +47,33 @@ export default class Settings {
     static addEventListener(eventName, handler) {
         return eventEmitter.addListener(eventName, handler);
     }
+}
+
+export function useConfig(key) {
+    const [config, setConfig] = useState(defaultConfig[key]);
+
+    useEffect(() => {
+        Settings.getConfig(key).then((newConfig) => setConfig(newConfig));
+    });
+
+    useEffect(() => {
+        const subscription = Settings.addEventListener('config-updated', (newConfigs) =>
+            setConfig(newConfigs[key])
+        );
+        return () => subscription.remove();
+    });
+
+    return config;
+}
+
+export function useConfigOnce(key) {
+    const [config, setConfig] = useState(defaultConfig[key]);
+
+    useEffect(() => {
+        Settings.getConfig(key).then((newConfig) => setConfig(newConfig));
+    });
+
+    return config;
 }
 
 export function useFavourites() {

@@ -42,8 +42,8 @@ export default function FavouritesListScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <Text style={{ fontStyle: 'italic', padding: 8 }}>No favourites added</Text>
-            <Text style={{ fontStyle: 'italic', paddingLeft: 8, paddingRight: 8 }}>
+            <Text style={styles.defaultText}>No favourites added</Text>
+            <Text style={styles.defaultText}>
                 Add a paper as a favourite by tapping the star icon
             </Text>
         </View>
@@ -54,5 +54,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    defaultText: {
+        fontStyle: 'italic',
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 8,
     },
 });

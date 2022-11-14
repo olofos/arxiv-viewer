@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MathJax from '../components/MathJax';
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
-import Settings, { useIsFavouriteWithToggle } from '../util/Settings';
+import { useConfig, useIsFavouriteWithToggle } from '../util/Settings';
 import Arxiv from '../util/Arxiv';
 
 function PaperSummary({ useMathJax, summary }) {
@@ -54,6 +54,7 @@ function PaperSummary({ useMathJax, summary }) {
 }
 
 function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
+    const browser = useConfig('openPDFInBrowser');
     return (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity onPress={toggleFavourite}>
@@ -64,13 +65,11 @@ function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
 
             <TouchableOpacity
                 onPress={() => {
-                    Settings.getConfig('openPDFInBrowser').then((browser) => {
-                        if (browser) {
-                            Linking.openURL(`https://arxiv.org/pdf/${item.id}`);
-                        } else {
-                            navigation.navigate('PDFScreen', item);
-                        }
-                    });
+                    if (browser) {
+                        Linking.openURL(`https://arxiv.org/pdf/${item.id}`);
+                    } else {
+                        navigation.navigate('PDFScreen', item);
+                    }
                 }}
             >
                 <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
@@ -80,26 +79,10 @@ function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
 }
 
 export default function PaperScreen({ navigation, route }) {
-    const [useMathJax, setUseMathJax] = useState(false);
-    const [loaded, setLoaded] = useState(false);
-
     const { item } = route.params;
     const id = Arxiv.baseId(item.id);
     const [isFavourite, toggleFavourite] = useIsFavouriteWithToggle(id);
-
-    useEffect(() => {
-        const promiseMJ = Settings.getConfig('useMathJax').then((newUseMathJax) => {
-            setUseMathJax(newUseMathJax);
-        });
-
-        Promise.all([promiseMJ]).then(() => setLoaded(true));
-    }, []);
-
-    useEffect(() => {
-        const updateUseMathJax = (config) => setUseMathJax(config.useMathJax);
-        const subscription = Settings.addEventListener('config-updated', updateUseMathJax);
-        return () => subscription.remove();
-    }, []);
+    const useMathJax = useConfig('useMathJax');
 
     useEffect(() => {
         navigation.setOptions({
@@ -121,10 +104,6 @@ export default function PaperScreen({ navigation, route }) {
             ),
         });
     }, [item, navigation, isFavourite, toggleFavourite]);
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         // The app crashes if the webview is rendered off screen. removeClippedSubviews={true} prevents this

@@ -226,8 +226,10 @@ export default function SettingsScreen({ navigation }) {
         return null;
     }
 
-    const updateConfig = (key, value) =>
+    const updateConfig = (key, value) => {
+        setConfig({ ...config, [key]: value });
         Settings.setConfig(key, value).then((newConfig) => setConfig(newConfig));
+    };
 
     return (
         <View style={styles.container}>

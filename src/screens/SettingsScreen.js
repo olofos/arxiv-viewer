@@ -240,9 +240,8 @@ export default function SettingsScreen({ navigation }) {
                 selectedItem={config.defaultCategory || 'none'}
                 onRequestClose={() => setModalVisible(false)}
                 onSelect={(item) => {
-                    updateConfig('defaultCategory', item === 'none' ? undefined : item).then(() =>
-                        setModalVisible(false)
-                    );
+                    updateConfig('defaultCategory', item);
+                    setModalVisible(false);
                 }}
             />
 

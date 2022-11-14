@@ -4,12 +4,20 @@ import { StyleSheet, Text, View } from 'react-native';
 import Arxiv from '../util/Arxiv';
 import { useFavourites } from '../util/Settings';
 import ArxivPaperFlatList from '../components/ArxivPaperFlatList';
+import TitleHeader from '../components/TitleHeader';
 
-export default function FavouritesListScreen({ ...props }) {
+export default function FavouritesListScreen({ navigation }) {
     const [favourites, setFavourites] = useState([]);
     const [fetching, setFetching] = useState(false);
 
     const favouriteIds = useFavourites();
+
+    useEffect(() => {
+        navigation.setOptions({
+            // eslint-disable-next-line react/no-unstable-nested-components
+            headerTitle: () => <TitleHeader title="Favourites" />,
+        });
+    }, [navigation]);
 
     useEffect(() => {
         const currentIds = favourites.map((entry) => Arxiv.baseId(entry.id));
@@ -34,7 +42,7 @@ export default function FavouritesListScreen({ ...props }) {
                 <ArxivPaperFlatList
                     data={favourites}
                     refreshing={fetching}
-                    navigation={props.navigation}
+                    navigation={navigation}
                 />
             </View>
         );

@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function TitleSubtitleHeader({ title, subtitle }) {
+export default function TitleHeader({ title }) {
     return (
         <View>
             <Text style={styles.headerTitle}>{title}</Text>
-            <Text style={styles.headerSubtitle}>{subtitle}</Text>
         </View>
     );
 }
@@ -16,13 +15,8 @@ const styles = StyleSheet.create({
     },
 
     headerTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '500',
-        color: '#fff',
-    },
-
-    headerSubtitle: {
-        fontSize: 12,
         color: '#fff',
     },
 });

@@ -10,10 +10,16 @@ const Stack = createNativeStackNavigator();
 
 export default function NewStack() {
     return (
-        <Stack.Navigator initialRouteName='FavouritesListScreen' screenOptions={{ headerStyle: { backgroundColor: Colors.tintColor, color: '#fff' }, headerTintColor: '#fff' }} >
-            <Stack.Screen name='FavouritesListScreen' component={FavouritesListScreen} options={{ title: 'Favourites' }} />
-            <Stack.Screen name='PaperScreen' component={PaperScreen} />
-            <Stack.Screen name='PDFScreen' component={PDFScreen} />
-        </Stack.Navigator >
+        <Stack.Navigator
+            initialRouteName="FavouritesListScreen"
+            screenOptions={{
+                headerStyle: { backgroundColor: Colors.tintColor },
+                headerTintColor: '#fff',
+            }}
+        >
+            <Stack.Screen name="FavouritesListScreen" component={FavouritesListScreen} />
+            <Stack.Screen name="PaperScreen" component={PaperScreen} />
+            <Stack.Screen name="PDFScreen" component={PDFScreen} />
+        </Stack.Navigator>
     );
 }

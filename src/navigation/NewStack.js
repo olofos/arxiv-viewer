@@ -5,7 +5,6 @@ import NewListScreen from '../screens/NewListScreen';
 import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
 
-import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 import Colors from '../constants/Colors';
 
 const Stack = createNativeStackNavigator();
@@ -14,20 +13,11 @@ export default function NewStack() {
     return (
         <Stack.Navigator
             screenOptions={{
-                headerStyle: { backgroundColor: Colors.tintColor, color: '#fff' },
+                headerStyle: { backgroundColor: Colors.tintColor },
                 headerTintColor: '#fff',
             }}
         >
-            <Stack.Screen
-                name="NewCategoryListScreen"
-                component={NewCategoryListScreen}
-                options={{
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    headerTitle: () => (
-                        <TitleSubtitleHeader title="New Papers" subtitle="Pick a category" />
-                    ),
-                }}
-            />
+            <Stack.Screen name="NewCategoryListScreen" component={NewCategoryListScreen} />
             <Stack.Screen name="NewListScreen" component={NewListScreen} />
             <Stack.Screen name="PaperScreen" component={PaperScreen} />
             <Stack.Screen name="PDFScreen" component={PDFScreen} />

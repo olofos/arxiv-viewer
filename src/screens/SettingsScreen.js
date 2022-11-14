@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import Arxiv from '../util/Arxiv';
 import Settings from '../util/Settings';
+import TitleHeader from '../components/TitleHeader';
 
 function SettingsGroup({ ...props }) {
     return <View style={[styles.group, props.style]}>{props.children}</View>;
@@ -154,6 +155,13 @@ export default function SettingsScreen({ navigation }) {
     const categories = ['none'].concat(
         ...Arxiv.categories.map((sect) => sect.data.map((cat) => cat.category))
     );
+
+    useEffect(() => {
+        navigation.setOptions({
+            // eslint-disable-next-line react/no-unstable-nested-components
+            headerTitle: () => <TitleHeader title="Settings" />,
+        });
+    }, [navigation]);
 
     useEffect(() => {
         const getConfig = async () => {

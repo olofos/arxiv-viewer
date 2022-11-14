@@ -12,7 +12,7 @@ export default function RecentListScreen({ navigation, route }) {
     const [filteredSections, setFilteredSections] = useState([]);
     const [numLoaded, setNumLoaded] = useState(0);
     const [fetching, setFetching] = useState(true);
-    const [subtitle, setSubtitle] = useState('');
+    const [subtitle, setSubtitle] = useState('Loading');
     const [showCrossref, setShowCrossref] = useState(true);
 
     const { category } = route.params;

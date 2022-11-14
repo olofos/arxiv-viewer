@@ -9,9 +9,15 @@ const Stack = createNativeStackNavigator();
 
 export default function SettingsStack() {
     return (
-        <Stack.Navigator initialRouteName='SettingsScreen' screenOptions={{ headerStyle: { backgroundColor: Colors.tintColor, color: '#fff' }, headerTintColor: '#fff' }}>
-            <Stack.Screen name='Settings' component={SettingsScreen} />
-            <Stack.Screen name='About' component={AboutScreen} />
+        <Stack.Navigator
+            initialRouteName="SettingsScreen"
+            screenOptions={{
+                headerStyle: { backgroundColor: Colors.tintColor },
+                headerTintColor: '#fff',
+            }}
+        >
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
         </Stack.Navigator>
     );
 }

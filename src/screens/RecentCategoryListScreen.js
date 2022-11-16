@@ -1,42 +1,11 @@
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import CategoryListScreen from './CategoryListScreen';
 
-import ArxivCategoryList from '../components/ArxivCategoryList';
-import { useConfigOnce } from '../util/Settings';
-import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
-
-export default function RecentCategoryListScreen({ navigation }) {
-    const defaultCategory = useConfigOnce('defaultCategory');
-
-    useEffect(() => {
-        navigation.setOptions({
-            // eslint-disable-next-line react/no-unstable-nested-components
-            headerTitle: () => (
-                <TitleSubtitleHeader title="Recent Papers" subtitle="Pick a category" />
-            ),
-        });
-    });
-
-    const goToCategory = (cat) => {
-        if (cat.category) {
-            navigation.navigate('RecentListScreen', cat);
-        }
-    };
-
+export default function NewCategoryListScreen({ navigation }) {
     return (
-        <View style={styles.container}>
-            <ArxivCategoryList
-                defaultCategory={defaultCategory}
-                navigation={navigation}
-                onPress={(item) => goToCategory(item)}
-            />
-        </View>
+        <CategoryListScreen
+            navigation={navigation}
+            title="Recent Papers"
+            screen="RecentListScreen"
+        />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-});

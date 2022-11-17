@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import Arxiv from '../util/Arxiv';
 import { useFavourites } from '../util/Settings';
@@ -38,35 +38,15 @@ export default function FavouritesListScreen({ navigation }) {
 
     if (favourites.length > 0 || fetching) {
         return (
-            <View style={styles.container}>
-                <ArxivPaperFlatList
-                    data={favourites}
-                    refreshing={fetching}
-                    navigation={navigation}
-                />
-            </View>
+            <ArxivPaperFlatList data={favourites} refreshing={fetching} navigation={navigation} />
         );
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.defaultText}>No favourites added</Text>
-            <Text style={styles.defaultText}>
-                Add a paper as a favourite by tapping the star icon
+        <View className="pl-2 pt-3">
+            <Text className="italic">
+                {'No favourites added\n\nAdd a paper as a favourite by tapping the star icon'}
             </Text>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    defaultText: {
-        fontStyle: 'italic',
-        paddingLeft: 8,
-        paddingRight: 8,
-        paddingTop: 8,
-    },
-});

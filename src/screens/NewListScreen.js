@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
@@ -83,40 +82,20 @@ export default function NewListScreen({ navigation, route }) {
     };
 
     return (
-        <View style={styles.container}>
-            <ArxivPaperSectionList
-                sections={
-                    fetching
-                        ? []
-                        : [
-                              { title: 'New', data: newPapers },
-                              { title: 'Cross Listed', data: crossListedPapers },
-                              { title: 'Updated', data: updatedPapers },
-                          ]
-                }
-                refreshing={fetching}
-                navigation={navigation}
-                onRefresh={() => fetchPapers()}
-                onViewableItemsChanged={(data) => onViewableItemsChanged(data)}
-            />
-        </View>
+        <ArxivPaperSectionList
+            sections={
+                fetching
+                    ? []
+                    : [
+                          { title: 'New', data: newPapers },
+                          { title: 'Cross Listed', data: crossListedPapers },
+                          { title: 'Updated', data: updatedPapers },
+                      ]
+            }
+            refreshing={fetching}
+            navigation={navigation}
+            onRefresh={() => fetchPapers()}
+            onViewableItemsChanged={(data) => onViewableItemsChanged(data)}
+        />
     );
 }
-
-const styles = StyleSheet.create({
-    headerContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000',
-    },
-
-    headerSubtitle: {
-        fontSize: 12,
-        color: '#000',
-    },
-});

@@ -1,9 +1,8 @@
 import React from 'react';
 import { FlatList, RefreshControl } from 'react-native';
+import colors from 'tailwindcss/colors';
 
 import ArxivPaperBrief from './ArxivPaperBrief';
-
-import Colors from '../constants/Colors';
 
 export default function ArxivPaperFlatList({ ...props }) {
     return (
@@ -19,7 +18,7 @@ export default function ArxivPaperFlatList({ ...props }) {
             keyExtractor={(item) => item.id}
             refreshControl={
                 <RefreshControl
-                    colors={[Colors.tintColor]}
+                    colors={[colors.gray[500]]}
                     refreshing={props.refreshing}
                     onRefresh={() => props.onRefresh && props.onRefresh()}
                 />

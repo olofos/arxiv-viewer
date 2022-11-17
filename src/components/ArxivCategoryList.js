@@ -1,29 +1,26 @@
 import React, { useEffect, useRef } from 'react';
 
-import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
 import Arxiv from '../util/Arxiv';
 
+const sectionHeaderHeight = 32;
+const itemHeight = 48;
+
 function ArxivCategoryItem({ item, ...props }) {
+    const bg = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-0';
+    const pl = item.category.indexOf('.') > 0 ? 'pl-4' : 'pl-2';
+
     return (
         <TouchableOpacity onPress={() => props.onPress(item)}>
             <View
-                style={[
-                    styles.itemRow,
-                    {
-                        backgroundColor: props.index % 2 === 1 ? '#eee' : '#fff',
-                        paddingLeft: item.category.indexOf('.') > 0 ? 8 : 0,
-                    },
-                ]}
+                className={`${pl} ${bg} flex-column justify-center`}
+                style={{ height: itemHeight }}
             >
-                <View>
-                    <Text style={styles.itemCategory}>{item.category}</Text>
-                </View>
-                <View>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                </View>
+                <Text className="font-semibold">{item.category}</Text>
+                <Text className="font-">{item.name}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -50,9 +47,9 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
     }, [defaultCategory, sections]);
 
     const getItemLayout = sectionListGetItemLayout({
-        getItemHeight: () => styles.itemRow.height,
+        getItemHeight: () => itemHeight,
         getSeparatorHeight: () => 0,
-        getSectionHeaderHeight: () => styles.sectionHeader.height,
+        getSectionHeaderHeight: () => sectionHeaderHeight,
         getSectionFooterHeight: () => 0,
         listHeaderHeight: 0,
     });
@@ -64,7 +61,12 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
                 <ArxivCategoryItem item={item} index={index} onPress={() => props.onPress(item)} />
             )}
             renderSectionHeader={({ section }) => (
-                <Text style={styles.sectionHeader}>{section.title}</Text>
+                <View
+                    className="pl-2 bg-gray-400 flex-column justify-around"
+                    style={{ height: sectionHeaderHeight }}
+                >
+                    <Text className="font-semibold text-base">{section.title}</Text>
+                </View>
             )}
             keyExtractor={(item, index) => index}
             stickySectionHeadersEnabled={false}
@@ -74,33 +76,3 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
         />
     );
 }
-
-const styles = StyleSheet.create({
-    sectionHeader: {
-        height: 32,
-        paddingTop: 4,
-        paddingLeft: 12,
-        paddingRight: 12,
-        paddingBottom: 4,
-        fontSize: 16,
-        fontWeight: '500',
-        backgroundColor: '#ccc',
-    },
-    itemCategory: {
-        paddingTop: 2,
-        paddingLeft: 12,
-        paddingRight: 12,
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    itemRow: {
-        height: 48,
-    },
-    itemName: {
-        paddingLeft: 12,
-        paddingRight: 12,
-        paddingBottom: 2,
-        fontSize: 12,
-        color: 'rgba(0,0,0,0.5)',
-    },
-});

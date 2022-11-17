@@ -1,11 +1,11 @@
 import * as React from 'react';
+import colors from 'tailwindcss/colors';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import NewCategoryListScreen from '../screens/NewCategoryListScreen';
 import NewListScreen from '../screens/NewListScreen';
 import PaperScreen from '../screens/PaperScreen';
 import PDFScreen from '../screens/PDFScreen';
-
-import Colors from '../constants/Colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,8 +13,8 @@ export default function NewStack() {
     return (
         <Stack.Navigator
             screenOptions={{
-                headerStyle: { backgroundColor: Colors.tintColor },
-                headerTintColor: '#fff',
+                headerStyle: { backgroundColor: colors.gray[500] },
+                headerTintColor: colors.white,
             }}
         >
             <Stack.Screen name="NewCategoryListScreen" component={NewCategoryListScreen} />

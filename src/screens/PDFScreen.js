@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
+import colors from 'tailwindcss/colors';
 
-import Colors from '../constants/Colors';
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
 export default function PDFScreen({ navigation, route }) {
@@ -16,21 +16,19 @@ export default function PDFScreen({ navigation, route }) {
     });
 
     return (
-        <View style={{ flex: 1 }}>
-            <WebView
-                source={{
-                    uri: `https://drive.google.com/viewerng/viewer?embedded=true&url=https://arxiv.org/pdf/${item.id}.pdf`,
-                }}
-                style={{}}
-                startInLoadingState
-                renderLoading={() => (
-                    <ActivityIndicator style={{ flex: 1 }} size="large" color={Colors.tintColor} />
-                )}
-                onError={(syntheticEvent) => {
-                    const { nativeEvent } = syntheticEvent;
-                    console.warn('WebView error: ', nativeEvent);
-                }}
-            />
-        </View>
+        <WebView
+            source={{
+                uri: `https://drive.google.com/viewerng/viewer?embedded=true&url=https://arxiv.org/pdf/${item.id}.pdf`,
+            }}
+            className="flex-1"
+            startInLoadingState
+            renderLoading={() => (
+                <ActivityIndicator className="flex-1" size="large" color={colors.gray[500]} />
+            )}
+            onError={(syntheticEvent) => {
+                const { nativeEvent } = syntheticEvent;
+                console.warn('WebView error: ', nativeEvent);
+            }}
+        />
     );
 }

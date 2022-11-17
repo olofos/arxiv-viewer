@@ -1,10 +1,10 @@
 import React from 'react';
-import { SectionList, StyleSheet, Text, View, RefreshControl } from 'react-native';
+import { SectionList, Text, View, RefreshControl } from 'react-native';
+import colors from 'tailwindcss/colors';
 
 import ArxivPaperBrief from './ArxivPaperBrief';
 import { useFavourites } from '../util/Settings';
 import Arxiv from '../util/Arxiv';
-import Colors from '../constants/Colors';
 
 export default function ArxivPaperSectionList({ ...props }) {
     const favourites = useFavourites();
@@ -27,13 +27,13 @@ export default function ArxivPaperSectionList({ ...props }) {
                     );
                 }
                 return (
-                    <View style={styles.paperContainer}>
-                        <Text style={{ fontStyle: 'italic' }}>No new papers</Text>
+                    <View className="pl-2 pb-1">
+                        <Text className="italic">No new papers</Text>
                     </View>
                 );
             }}
             renderSectionHeader={({ section }) => (
-                <Text style={styles.sectionHeader}>{section.title}</Text>
+                <Text className="pl-2 bg-gray-400 text-lg font-semibold">{section.title}</Text>
             )}
             keyExtractor={(item, index) => index}
             onEndReachedThreshold={1}
@@ -53,7 +53,7 @@ export default function ArxivPaperSectionList({ ...props }) {
             }}
             refreshControl={
                 <RefreshControl
-                    colors={[Colors.tintColor]}
+                    colors={[colors.gray[500]]}
                     refreshing={props.refreshing}
                     onRefresh={() => props.onRefresh()}
                 />
@@ -61,16 +61,3 @@ export default function ArxivPaperSectionList({ ...props }) {
         />
     );
 }
-
-const styles = StyleSheet.create({
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        marginBottom: 2,
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#ccc',
-    },
-});

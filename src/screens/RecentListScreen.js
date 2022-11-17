@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
@@ -68,19 +68,16 @@ export default function RecentListScreen({ navigation, route }) {
         navigation.setOptions({
             // eslint-disable-next-line react/no-unstable-nested-components
             headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View className="flex-row items-center">
                     <TouchableOpacity
                         onPress={() => {
                             setShowCrossref(!showCrossref);
                         }}
                     >
-                        <View style={{ flex: 0, marginRight: 14 }}>
-                            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                                <Text style={{ fontSize: 12, color: '#fff' }}>
-                                    {showCrossref ? 'Hide' : 'Show'}
-                                </Text>
-                                <Text style={{ fontSize: 12, color: '#fff' }}>Crossrefs</Text>
-                            </View>
+                        <View className="flex-0 mr-3">
+                            <Text className="text-white text-xs text-center">
+                                {`${showCrossref ? 'Hide' : 'Show'}\nCrossrefs`}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -99,37 +96,17 @@ export default function RecentListScreen({ navigation, route }) {
     }, [category, sections, showCrossref]);
 
     return (
-        <View style={styles.container}>
-            <ArxivPaperSectionList
-                sections={filteredSections}
-                refreshing={fetching}
-                navigation={navigation}
-                onRefresh={() => {
-                    setSections([]);
-                    setNumLoaded(0);
-                    fetchMorePapers([], 0);
-                }}
-                onEndReached={() => fetchMorePapers(sections, numLoaded)}
-                onViewableItemsChanged={(data) => onViewableItemsChanged(data)}
-            />
-        </View>
+        <ArxivPaperSectionList
+            sections={filteredSections}
+            refreshing={fetching}
+            navigation={navigation}
+            onRefresh={() => {
+                setSections([]);
+                setNumLoaded(0);
+                fetchMorePapers([], 0);
+            }}
+            onEndReached={() => fetchMorePapers(sections, numLoaded)}
+            onViewableItemsChanged={(data) => onViewableItemsChanged(data)}
+        />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        marginBottom: 2,
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#ccc',
-    },
-});

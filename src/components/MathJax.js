@@ -32,6 +32,7 @@ export default function MathJax({ ...props }) {
     const options = JSON.stringify({ ...defaultOptions, ...props.mathJaxOptions });
 
     const html = `
+        <html>
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config(${options});
@@ -44,13 +45,21 @@ export default function MathJax({ ...props }) {
             </script>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
+            <body style="margin: 0 !important;padding: 0 !important;">
             <div id="formula" style="visibility: hidden;">
                 ${props.html}
             </div>
+            </body>
+        </html>
         `;
     return (
-        <View style={{ height, ...props.style }}>
-            <WebView scrollEnabled={false} onMessage={handleMessage} source={{ html }} />
+        <View className="flex-1 p-0 m-0" style={{ height }}>
+            <WebView
+                style={{ margin: 0, padding: 0 }}
+                scrollEnabled={false}
+                onMessage={handleMessage}
+                source={{ html }}
+            />
         </View>
     );
 }

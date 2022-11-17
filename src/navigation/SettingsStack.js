@@ -1,9 +1,8 @@
 import * as React from 'react';
+import colors from 'tailwindcss/colors';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SettingsScreen from '../screens/SettingsScreen';
 import AboutScreen from '../screens/AboutScreen';
-
-import Colors from '../constants/Colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,8 +11,8 @@ export default function SettingsStack() {
         <Stack.Navigator
             initialRouteName="SettingsScreen"
             screenOptions={{
-                headerStyle: { backgroundColor: Colors.tintColor },
-                headerTintColor: '#fff',
+                headerStyle: { backgroundColor: colors.gray[500] },
+                headerTintColor: colors.white,
             }}
         >
             <Stack.Screen name="Settings" component={SettingsScreen} />

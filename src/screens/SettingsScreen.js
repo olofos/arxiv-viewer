@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-    StyleSheet,
     View,
     FlatList,
     TouchableHighlight,
@@ -8,27 +7,29 @@ import {
     Text,
     Modal,
     Linking,
+    TouchableOpacity,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import colors from 'tailwindcss/colors';
 
 import Arxiv from '../util/Arxiv';
 import Settings from '../util/Settings';
 import TitleHeader from '../components/TitleHeader';
 
 function SettingsGroup({ ...props }) {
-    return <View style={[styles.group, props.style]}>{props.children}</View>;
+    return <View className="bg-white mb-3">{props.children}</View>;
 }
 
 function SettingSwitch({ ...props }) {
     return (
-        <View style={[styles.switchContainer, props.style]}>
-            <Text style={styles.switchText}>{props.title}</Text>
+        <View className="ml-2 mr-1 h-10 flex-row">
+            <Text className="self-center flex-0 text-base">{props.title}</Text>
             <Switch
-                style={styles.switch}
+                className="flex-1"
                 value={props.value}
-                thumbColor={props.value ? '#00b386' : '#9b9b9b'}
-                trackColor={{ true: '#abe3d5', false: '#c7c7c7' }}
+                thumbColor={props.value ? colors.gray[400] : colors.gray[200]}
+                trackColor={{ true: colors.gray[300], false: colors.gray[200] }}
                 onValueChange={(value) => props.onValueChange(value)}
             />
         </View>
@@ -37,19 +38,21 @@ function SettingSwitch({ ...props }) {
 
 function SettingTouchable({ ...props }) {
     return (
-        <TouchableHighlight onPress={() => props.onPress()} underlayColor="#b2dfdc">
-            <View style={[styles.touchableContainer, props.style]}>
-                <Text style={styles.touchableText}>{props.title}</Text>
+        <TouchableOpacity onPress={() => props.onPress()} underlayColor={colors.gray[300]}>
+            <View className="mx-2 h-10 flex-row">
+                <Text className="self-center flex-1 text-base">{props.title}</Text>
 
                 {props.subtitle ? (
-                    <Text style={styles.touchableSubtitle}>{props.subtitle}</Text>
+                    <Text className="text-sm flex-0 text-gray-400 self-center">
+                        {props.subtitle}
+                    </Text>
                 ) : null}
 
-                <View style={styles.touchableIcon}>
-                    <Ionicons name="chevron-forward" color="#aaa" size={16} />
+                <View className="flex-0 self-center pt-0.5 pl-1">
+                    <Ionicons name="chevron-forward" color={colors.gray[400]} size={16} />
                 </View>
             </View>
-        </TouchableHighlight>
+        </TouchableOpacity>
     );
 }
 
@@ -121,7 +124,6 @@ function SelectableFlatListModal({ ...props }) {
                             style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                borderBottomWidth: 1,
                                 paddingBottom: 4,
                                 paddingTop: 4,
                             }}
@@ -145,7 +147,7 @@ function SelectableFlatListModal({ ...props }) {
 }
 
 function SettingsDivider() {
-    return <View style={styles.divider} />;
+    return <View className="ml-2 border-b border-gray-200" />;
 }
 
 export default function SettingsScreen({ navigation }) {
@@ -182,7 +184,7 @@ export default function SettingsScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+        <View className="bg-gray-200 pt-3 flex-1">
             <SelectableFlatListModal
                 visible={modalVisible}
                 title="Default Category"
@@ -226,75 +228,11 @@ export default function SettingsScreen({ navigation }) {
                 />
             </SettingsGroup>
 
-            <View style={{ flex: 1 }} />
+            <View className="flex-1" />
 
-            <SettingsGroup style={{}}>
+            <SettingsGroup>
                 <SettingTouchable onPress={() => navigation.navigate('About')} title="About" />
             </SettingsGroup>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eee',
-        paddingBottom: 16,
-    },
-    group: {
-        marginTop: 16,
-        backgroundColor: '#fff',
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: '#d8d8d8',
-    },
-    switchContainer: {
-        marginLeft: 16,
-        height: 50,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        borderColor: '#d8d8d8',
-    },
-    switchText: {
-        fontSize: 16,
-        flex: 1,
-        alignSelf: 'center',
-    },
-    switch: {
-        marginRight: 15,
-        flex: 1,
-        justifyContent: 'center',
-    },
-    touchableContainer: {
-        marginLeft: 16,
-        height: 50,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        borderColor: '#d8d8d8',
-    },
-    touchableText: {
-        fontSize: 16,
-        flex: 1,
-        alignSelf: 'center',
-    },
-    touchableSubtitle: {
-        marginRight: 16,
-        fontSize: 14,
-        flex: 0,
-        alignSelf: 'center',
-        textAlign: 'right',
-        color: '#aaa',
-    },
-    touchableIcon: {
-        flex: 0,
-        marginRight: 15,
-        alignSelf: 'center',
-    },
-    divider: {
-        marginLeft: 16,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        borderColor: '#d8d8d8',
-        borderBottomWidth: 1,
-    },
-});

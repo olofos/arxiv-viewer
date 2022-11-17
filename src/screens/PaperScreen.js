@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View, Linking } from 'react-native';
+import colors from 'tailwindcss/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -12,16 +13,22 @@ import Arxiv from '../util/Arxiv';
 function PaperSummary({ useMathJax, summary }) {
     if (!useMathJax) {
         return (
-            <View style={styles.box}>
-                <Text style={styles.paperSummary}>{summary}</Text>
+            <View className="pl-2 pr-4 py-1 mb-3 bg-white flex-row justify-center">
+                <Text className="text-base text-justify">{summary}</Text>
             </View>
         );
     }
     return (
-        <View style={[styles.box, { paddingLeft: 4, flex: 1 }]}>
+        <View className="pl-2 pr-3 py-2 mb-3 bg-white flex-row justify-center">
             <MathJax
                 // HTML content with MathJax support
-                html={`<p style="font-size:12pt;padding:0px;margin:0px">${summary}</p>`}
+                html={`<p style="
+                font-size:12pt;
+                padding:0px;
+                margin:0px;
+                text-align:justify;
+                text-justify:inter-word
+                ">${summary}</p>`}
                 // MathJax config option
                 mathJaxOptions={{
                     messageStyle: 'none',
@@ -47,7 +54,6 @@ function PaperSummary({ useMathJax, summary }) {
                         ],
                     },
                 }}
-                style={{ paddingLeft: 0, margin: 0, flex: 1 }}
             />
         </View>
     );
@@ -56,10 +62,14 @@ function PaperSummary({ useMathJax, summary }) {
 function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
     const browser = useConfig('openPDFInBrowser');
     return (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View className="flex-row items-center">
             <TouchableOpacity onPress={toggleFavourite}>
-                <View style={{ flex: 0, marginRight: 14 }}>
-                    <Ionicons color="#fff" size={24} name={isFavourite ? 'star' : 'star-outline'} />
+                <View className="flex-0 mr-3">
+                    <Ionicons
+                        color={colors.white}
+                        size={24}
+                        name={isFavourite ? 'star' : 'star-outline'}
+                    />
                 </View>
             </TouchableOpacity>
 
@@ -72,7 +82,7 @@ function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
                     }
                 }}
             >
-                <Text style={{ marginRight: 14, color: '#fff' }}>PDF</Text>
+                <Text className="flex-0 text-white pr-0 mr-0">PDF</Text>
             </TouchableOpacity>
         </View>
     );
@@ -106,12 +116,11 @@ export default function PaperScreen({ navigation, route }) {
     }, [item, navigation, isFavourite, toggleFavourite]);
 
     return (
-        // The app crashes if the webview is rendered off screen. removeClippedSubviews={true} prevents this
-        <ScrollView style={styles.paperContainer} removeClippedSubviews>
-            <Text style={[styles.box, styles.paperTitle]}>{item.title}</Text>
-            <View style={[styles.box, { flex: 1 }]}>
+        <ScrollView className="pt-3 flex-1 bg-gray-200" removeClippedSubviews>
+            <Text className="pl-2 py-1 mb-3 bg-white font-semibold text-lg">{item.title}</Text>
+            <View className="pl-2 py-1 mb-3 bg-white">
                 {item.authors.map((name) => (
-                    <Text key={name} style={styles.paperAuthor}>
+                    <Text key={name} className="text-base">
                         {name}
                     </Text>
                 ))}
@@ -119,7 +128,9 @@ export default function PaperScreen({ navigation, route }) {
 
             <PaperSummary useMathJax={useMathJax} summary={item.summary} />
             {item.comment ? (
-                <Text style={[styles.box, styles.paperComment]}>Comments: {item.comment}</Text>
+                <Text className="pl-2 py-1 mb-3 bg-white font-base text-base">
+                    Comments: {item.comment}
+                </Text>
             ) : null}
 
             <TouchableOpacity
@@ -127,63 +138,14 @@ export default function PaperScreen({ navigation, route }) {
                     Linking.openURL(`https://arxiv.org/abs/${item.id}`);
                 }}
             >
-                <View style={[styles.box, { flexDirection: 'row', justifyContent: 'center' }]}>
-                    <Text style={{ flex: 1, alignSelf: 'center' }}>Open arxiv page in browser</Text>
+                <View className="px-2 mb-6 py-1 bg-white flex-row justify-center">
+                    <Text className="flex-1 self-center text-base">Open arxiv page in browser</Text>
 
-                    <View
-                        style={{
-                            flex: 0,
-                            marginRight: 15,
-                            alignSelf: 'center',
-                        }}
-                    >
-                        <Ionicons name="chevron-forward" color="#aaa" size={16} />
+                    <View className="flex-0 self-center pt-0.5 pl-1">
+                        <Ionicons name="chevron-forward" color={colors.gray[400]} size={16} />
                     </View>
                 </View>
             </TouchableOpacity>
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    box: {
-        paddingTop: 8,
-        paddingBottom: 8,
-        paddingLeft: 10,
-        paddingRight: 10,
-        borderBottomWidth: 1,
-        borderTopWidth: 1,
-        borderColor: '#ddd',
-        backgroundColor: '#fff',
-        marginBottom: 12,
-    },
-
-    paperContainer: {
-        flex: 1,
-        paddingTop: 4,
-        paddingBottom: 8,
-        backgroundColor: '#eee',
-    },
-
-    paperAuthor: {
-        fontSize: 16,
-    },
-
-    paperTitle: {
-        padding: 4,
-        fontSize: 16,
-        fontWeight: '500',
-    },
-
-    paperSummary: {
-        fontSize: 16,
-    },
-
-    paperComment: {},
-
-    item: {
-        paddingTop: 2,
-        paddingBottom: 2,
-        fontSize: 12,
-    },
-});

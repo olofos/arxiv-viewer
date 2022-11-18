@@ -66,8 +66,7 @@ export function useConfig(key) {
 }
 
 export function useConfigOnce(key) {
-    const [config, setConfig] = useState(defaultConfig[key]);
-
+    const [config, setConfig] = useState();
     useEffect(() => {
         Settings.getConfig(key).then((newConfig) => setConfig(newConfig));
     }, [key]);

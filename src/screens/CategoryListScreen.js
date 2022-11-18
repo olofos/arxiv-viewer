@@ -14,6 +14,8 @@ export default function CategoryListScreen({ navigation, title, screen }) {
         });
     });
 
+    if (!defaultCategory) return null;
+
     const goToCategory = (cat) => {
         if (cat.category) {
             navigation.navigate(screen, cat);

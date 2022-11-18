@@ -31,6 +31,12 @@ export default class Settings {
         });
     }
 
+    static resetConfig() {
+        AsyncStorage.setItem('config', JSON.stringify(defaultConfig)).then(() => {
+            eventEmitter.emit('config-updated', defaultConfig);
+        });
+    }
+
     static getFavourites() {
         return AsyncStorage.getItem('favourites')
             .then(JSON.parse)

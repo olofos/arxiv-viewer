@@ -103,6 +103,9 @@ export default function SettingsScreen({ navigation }) {
             </SettingsGroup>
 
             <View className="flex-1" />
+            <SettingsGroup>
+                <SettingTouchable onPress={() => Settings.resetConfig()} title="Reset Settings" />
+            </SettingsGroup>
 
             <SettingsGroup>
                 <SettingTouchable

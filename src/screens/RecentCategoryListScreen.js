@@ -5,7 +5,7 @@ export default function NewCategoryListScreen({ navigation }) {
         <CategoryListScreen
             navigation={navigation}
             title="Recent Papers"
-            screen="RecentListScreen"
+            onPress={(item) => item.category && navigation.navigate('RecentListScreen', item)}
         />
     );
 }

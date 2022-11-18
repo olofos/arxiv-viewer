@@ -4,7 +4,7 @@ import ArxivCategoryList from '../components/ArxivCategoryList';
 import { useConfigOnce } from '../util/Settings';
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
 
-export default function CategoryListScreen({ navigation, title, screen }) {
+export default function CategoryListScreen({ navigation, title, onPress, mark }) {
     const defaultCategory = useConfigOnce('defaultCategory');
 
     useEffect(() => {
@@ -16,17 +16,12 @@ export default function CategoryListScreen({ navigation, title, screen }) {
 
     if (!defaultCategory) return null;
 
-    const goToCategory = (cat) => {
-        if (cat.category) {
-            navigation.navigate(screen, cat);
-        }
-    };
-
     return (
         <ArxivCategoryList
             defaultCategory={defaultCategory}
             navigation={navigation}
-            onPress={(item) => goToCategory(item)}
+            mark={mark}
+            onPress={onPress}
         />
     );
 }

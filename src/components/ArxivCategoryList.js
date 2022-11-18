@@ -9,18 +9,20 @@ import Arxiv from '../util/Arxiv';
 const sectionHeaderHeight = 32;
 const itemHeight = 48;
 
-function ArxivCategoryItem({ item, ...props }) {
+function ArxivCategoryItem({ item, mark, ...props }) {
     const bg = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-0';
     const pl = item.topLevel ? 'pl-4' : 'pl-2';
 
     return (
         <TouchableOpacity onPress={() => props.onPress(item)}>
-            <View
-                className={`${pl} ${bg} flex-column justify-center`}
-                style={{ height: itemHeight }}
-            >
+            <View className={`${pl} ${bg} flex-1 flex-row`} style={{ height: itemHeight }}>
+                <View className="flex-column flex-1 justify-center">
                 <Text className="font-semibold">{item.category}</Text>
-                <Text className="font-">{item.name}</Text>
+                    <Text className="font-base">{item.name}</Text>
+                </View>
+                <View className="flex-column justify-center pr-3">
+                    {mark && <Ionicons name="checkmark" size={18} />}
+                </View>
             </View>
         </TouchableOpacity>
     );
@@ -58,7 +60,12 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
         <SectionList
             sections={sections}
             renderItem={({ item, index }) => (
-                <ArxivCategoryItem item={item} index={index} onPress={() => props.onPress(item)} />
+                <ArxivCategoryItem
+                    item={item}
+                    index={index}
+                    mark={props?.mark && item.category === defaultCategory}
+                    onPress={() => props.onPress(item)}
+                />
             )}
             renderSectionHeader={({ section }) => (
                 <View

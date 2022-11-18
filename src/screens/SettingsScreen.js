@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Switch, Text, Linking, TouchableOpacity } from 'react-native';
+import { View, Switch, Text, Linking, TouchableOpacity, Alert } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import colors from 'tailwindcss/colors';
@@ -104,7 +104,24 @@ export default function SettingsScreen({ navigation }) {
 
             <View className="flex-1" />
             <SettingsGroup>
-                <SettingTouchable onPress={() => Settings.resetConfig()} title="Reset Settings" />
+                <SettingTouchable
+                    title="Reset Settings"
+                    onPress={() => {
+                        Alert.alert(
+                            'Reset Settings',
+                            'All settings will be set to their default values.',
+                            [
+                                { text: 'Cancel', style: 'cancel' },
+                                {
+                                    text: 'OK',
+                                    onPress: () => Settings.resetConfig(),
+                                    style: 'default',
+                                },
+                            ],
+                            { cancelable: true }
+                        );
+                    }}
+                />
             </SettingsGroup>
 
             <SettingsGroup>

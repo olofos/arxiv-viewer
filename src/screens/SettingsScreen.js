@@ -231,7 +231,10 @@ export default function SettingsScreen({ navigation }) {
             <View className="flex-1" />
 
             <SettingsGroup>
-                <SettingTouchable onPress={() => navigation.navigate('About')} title="About" />
+                <SettingTouchable
+                    onPress={() => navigation.navigate('AboutScreen')}
+                    title="About"
+                />
             </SettingsGroup>
         </View>
     );

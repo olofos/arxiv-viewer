@@ -15,8 +15,8 @@ export default function SettingsStack() {
                 headerTintColor: colors.white,
             }}
         >
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="About" component={AboutScreen} />
+            <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+            <Stack.Screen name="AboutScreen" component={AboutScreen} />
         </Stack.Navigator>
     );
 }

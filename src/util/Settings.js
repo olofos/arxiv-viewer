@@ -51,17 +51,16 @@ export default class Settings {
 
 export function useConfig(key) {
     const [config, setConfig] = useState(defaultConfig[key]);
-
     useEffect(() => {
         Settings.getConfig(key).then((newConfig) => setConfig(newConfig));
-    });
+    }, [key]);
 
     useEffect(() => {
         const subscription = Settings.addEventListener('config-updated', (newConfigs) =>
             setConfig(newConfigs[key])
         );
         return () => subscription.remove();
-    });
+    }, [key]);
 
     return config;
 }
@@ -71,7 +70,7 @@ export function useConfigOnce(key) {
 
     useEffect(() => {
         Settings.getConfig(key).then((newConfig) => setConfig(newConfig));
-    });
+    }, [key]);
 
     return config;
 }

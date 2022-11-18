@@ -11,7 +11,7 @@ const itemHeight = 48;
 
 function ArxivCategoryItem({ item, ...props }) {
     const bg = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-0';
-    const pl = item.category.indexOf('.') > 0 ? 'pl-4' : 'pl-2';
+    const pl = item.topLevel ? 'pl-4' : 'pl-2';
 
     return (
         <TouchableOpacity onPress={() => props.onPress(item)}>

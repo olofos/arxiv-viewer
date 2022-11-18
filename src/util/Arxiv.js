@@ -95,6 +95,7 @@ const categories = ArxivCategories.map((sect) => ({
         text: `${cat.name} [${cat.category}]`,
         category: cat.category,
         name: cat.name,
+        topLevel: cat.category.indexOf('.') > 0,
     })),
 }));
 

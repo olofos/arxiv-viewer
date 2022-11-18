@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-
 import { SectionList, Text, TouchableOpacity, View } from 'react-native';
-
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+import { Ionicons } from '@expo/vector-icons';
 
 import Arxiv from '../util/Arxiv';
 
@@ -17,7 +16,7 @@ function ArxivCategoryItem({ item, mark, ...props }) {
         <TouchableOpacity onPress={() => props.onPress(item)}>
             <View className={`${pl} ${bg} flex-1 flex-row`} style={{ height: itemHeight }}>
                 <View className="flex-column flex-1 justify-center">
-                <Text className="font-semibold">{item.category}</Text>
+                    <Text className="font-semibold">{item.category}</Text>
                     <Text className="font-base">{item.name}</Text>
                 </View>
                 <View className="flex-column justify-center pr-3">
@@ -45,7 +44,7 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
             index = { sectionIndex, itemIndex };
         }
 
-        sectionListRef.current.scrollToLocation({ ...index, animated: true });
+        sectionListRef.current.scrollToLocation({ ...index, animated: false });
     }, [defaultCategory, sections]);
 
     const getItemLayout = sectionListGetItemLayout({

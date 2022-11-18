@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from 'tailwindcss/colors';
 
 import Arxiv from '../util/Arxiv';
-import Settings from '../util/Settings';
+import Settings, { useConfigs } from '../util/Settings';
 import TitleHeader from '../components/TitleHeader';
 
 function SettingsGroup({ ...props }) {
@@ -151,12 +151,7 @@ function SettingsDivider() {
 }
 
 export default function SettingsScreen({ navigation }) {
-    const [config, setConfig] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const categories = ['none'].concat(
-        ...Arxiv.categories.map((sect) => sect.data.map((cat) => cat.category))
-    );
+    const [config, setConfig] = useConfigs();
 
     useEffect(() => {
         navigation.setOptions({
@@ -165,23 +160,14 @@ export default function SettingsScreen({ navigation }) {
         });
     }, [navigation]);
 
-    useEffect(() => {
-        const getConfig = async () => {
-            const theConfig = await Settings.getConfig();
-            setConfig(theConfig);
+    const updateConfig = (key, value) => {
+        setConfig({ ...config, [key]: value });
+        Settings.setConfig(key, value);
         };
-
-        getConfig();
-    }, []);
 
     if (!config) {
         return null;
     }
-
-    const updateConfig = (key, value) => {
-        setConfig({ ...config, [key]: value });
-        Settings.setConfig(key, value).then((newConfig) => setConfig(newConfig));
-    };
 
     return (
         <View className="bg-gray-200 pt-3 flex-1">

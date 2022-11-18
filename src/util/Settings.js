@@ -65,6 +65,22 @@ export function useConfig(key) {
     return config;
 }
 
+export function useConfigs() {
+    const [config, setConfig] = useState();
+    useEffect(() => {
+        Settings.getConfig().then((newConfig) => setConfig(newConfig));
+    }, []);
+
+    useEffect(() => {
+        const subscription = Settings.addEventListener('config-updated', (newConfigs) =>
+            setConfig(newConfigs)
+        );
+        return () => subscription.remove();
+    }, []);
+
+    return [config, setConfig];
+}
+
 export function useConfigOnce(key) {
     const [config, setConfig] = useState();
     useEffect(() => {

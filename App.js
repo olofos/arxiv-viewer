@@ -4,6 +4,7 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import colors from 'tailwindcss/colors';
 
 import MainTabNavigator from './src/navigation/MainTabNavigator';
+import NewBackgroundFetcher from './src/components/NewBackgroundFetcher';
 
 const Theme = {
     ...DefaultTheme,
@@ -21,6 +22,7 @@ const Theme = {
 export default function App() {
     return (
         <NavigationContainer theme={Theme}>
+            <NewBackgroundFetcher />
             {/* eslint-disable-next-line react/style-prop-object */}
             <StatusBar style="light" />
             <MainTabNavigator />

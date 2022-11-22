@@ -1,6 +1,7 @@
 import { DOMParser } from '@xmldom/xmldom';
 
 import ArxivCategories from '../data/Categories.json';
+import { groupBy } from './Util';
 
 function compareCategories(mainCategory, category) {
     const regex = new RegExp(`^${mainCategory}(\\.[a-zA-Z-]+)?$`);
@@ -73,10 +74,10 @@ function parseRSS(text, category) {
     const parser = new DOMParser();
     const xml = parser.parseFromString(text, 'text/xml');
 
+    const date = xml.getElementsByTagName('dc:date')[0]?.childNodes[0]?.nodeValue;
     const items = Array.from(xml.getElementsByTagName('item'));
-
     const ids = items.map((item) => parseRSSItemId(item, category));
-    return ids;
+    return { category, date, ...groupBy(ids, 'section') };
 }
 
 function parseAtom(response) {

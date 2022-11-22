@@ -37,9 +37,7 @@ export default function NewListScreen({ navigation, route }) {
         setFetching(true);
         setSubtitle('Loading');
 
-        Arxiv.fetchNew(category).then((resultPapers) => {
-            const papers = groupBy(resultPapers, 'section');
-
+        Arxiv.fetchNew(category).then((papers) => {
             const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
                 .then((result) => insertEmptyPlaceHolder(result))
                 .then((result) => {

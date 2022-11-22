@@ -14,13 +14,20 @@ function SettingsGroup({ ...props }) {
 function SettingSwitch({ ...props }) {
     return (
         <View className="ml-2 mr-1 h-10 flex-row">
-            <Text className="self-center flex-0 text-base">{props.title}</Text>
+            <Text
+                className={`self-center flex-0 text-base ${
+                    props.disabled ? 'text-gray-400' : 'text-black'
+                }`}
+            >
+                {props.title}
+            </Text>
             <Switch
                 className="flex-1"
                 value={props.value}
                 thumbColor={props.value ? colors.gray[400] : colors.gray[200]}
                 trackColor={{ true: colors.gray[300], false: colors.gray[200] }}
                 onValueChange={(value) => props.onValueChange(value)}
+                disabled={props.disabled}
             />
         </View>
     );

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
 import Arxiv from '../util/Arxiv';
 
 import TitleSubtitleHeader from '../components/TitleSubtitleHeader';
-
-import { groupBy } from '../util/Util';
 
 function extractIDs(list) {
     if (list) {
@@ -38,6 +37,11 @@ export default function NewListScreen({ navigation, route }) {
         setSubtitle('Loading');
 
         Arxiv.fetchNew(category).then((papers) => {
+            const promiseStorage = AsyncStorage.setItem(
+                `fetch-new-${category}`,
+                new Date(papers.date).toISOString()
+            );
+
             const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
                 .then((result) => insertEmptyPlaceHolder(result))
                 .then((result) => {
@@ -56,9 +60,11 @@ export default function NewListScreen({ navigation, route }) {
                     setCrossListedPapers(result);
                 });
 
-            Promise.all([promiseNew, promiseUpdated, promiseCrossListed]).then(() => {
-                setFetching(false);
-            });
+            Promise.all([promiseStorage, promiseNew, promiseUpdated, promiseCrossListed]).then(
+                () => {
+                    setFetching(false);
+                }
+            );
         });
     }, [category]);
 

@@ -100,6 +100,14 @@ export default function SettingsScreen({ navigation }) {
                     title="Default Category"
                     subtitle={config.defaultCategory || 'none'}
                 />
+
+                <SettingsDivider />
+                <SettingSwitch
+                    onValueChange={(value) => updateConfig('newPapersNotification', value)}
+                    value={config.defaultCategory !== 'none' && config.newPapersNotification}
+                    title="Send notifications when new papers arrive"
+                    disabled={config.defaultCategory === 'none'}
+                />
             </SettingsGroup>
 
             <SettingsGroup>

@@ -4,7 +4,12 @@ import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import { useState, useEffect } from 'react';
 
-const defaultConfig = { defaultCategory: 'none', useMathJax: true, openPDFInBrowser: false };
+const defaultConfig = {
+    defaultCategory: 'none',
+    useMathJax: true,
+    openPDFInBrowser: false,
+    newPapersNotification: true,
+};
 
 const eventEmitter = new EventEmitter();
 

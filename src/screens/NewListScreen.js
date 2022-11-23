@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ArxivPaperSectionList from '../components/ArxivPaperSectionList';
@@ -36,36 +37,44 @@ export default function NewListScreen({ navigation, route }) {
         setFetching(true);
         setSubtitle('Loading');
 
-        Arxiv.fetchNew(category).then((papers) => {
-            const promiseStorage = AsyncStorage.setItem(
-                `fetch-new-${category}`,
-                new Date(papers.date).toISOString()
-            );
+        Arxiv.fetchNew(category)
+            .then((papers) => {
+                const promiseStorage = AsyncStorage.setItem(
+                    `fetch-new-${category}`,
+                    new Date(papers.date).toISOString()
+                );
 
-            const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
-                .then((result) => insertEmptyPlaceHolder(result))
-                .then((result) => {
-                    setNewPapers(result);
-                });
+                const promiseNew = Arxiv.fetchPapersById(extractIDs(papers.new))
+                    .then((result) => insertEmptyPlaceHolder(result))
+                    .then((result) => {
+                        setNewPapers(result);
+                    });
 
-            const promiseUpdated = Arxiv.fetchPapersById(extractIDs(papers.updated))
-                .then((result) => insertEmptyPlaceHolder(result))
-                .then((result) => {
-                    setUpdatedPapers(result);
-                });
+                const promiseUpdated = Arxiv.fetchPapersById(extractIDs(papers.updated))
+                    .then((result) => insertEmptyPlaceHolder(result))
+                    .then((result) => {
+                        setUpdatedPapers(result);
+                    });
 
-            const promiseCrossListed = Arxiv.fetchPapersById(extractIDs(papers.crossListed))
-                .then((result) => insertEmptyPlaceHolder(result))
-                .then((result) => {
-                    setCrossListedPapers(result);
-                });
+                const promiseCrossListed = Arxiv.fetchPapersById(extractIDs(papers.crossListed))
+                    .then((result) => insertEmptyPlaceHolder(result))
+                    .then((result) => {
+                        setCrossListedPapers(result);
+                    });
 
-            Promise.all([promiseStorage, promiseNew, promiseUpdated, promiseCrossListed]).then(
-                () => {
-                    setFetching(false);
-                }
-            );
-        });
+                return Promise.all([
+                    promiseStorage,
+                    promiseNew,
+                    promiseUpdated,
+                    promiseCrossListed,
+                ]);
+            })
+            .then(() => {
+                setFetching(false);
+            })
+            .catch(() => {
+                setSubtitle('Error');
+            });
     }, [category]);
 
     useEffect(() => {
@@ -84,6 +93,14 @@ export default function NewListScreen({ navigation, route }) {
             setSubtitle(`Showing ${number} ${section} ${number === 1 ? 'paper' : 'papers'}`);
         }
     };
+
+    if (subtitle === 'Error') {
+        return (
+            <View className="p-2">
+                <Text>There was an error fetching arxiv data. Please try again.</Text>
+            </View>
+        );
+    }
 
     return (
         <ArxivPaperSectionList

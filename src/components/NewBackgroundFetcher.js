@@ -47,8 +47,8 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
             return BackgroundFetch.BackgroundFetchResult.NoData;
         }
 
-        const lastFetch = await AsyncStorage.getItem(`fetch-new-${category}`).then((d) =>
-            newDate(d || 0)
+        const lastFetch = await AsyncStorage.getItem(`fetch-new-${category}`).then(
+            (d) => new Date(d || 0)
         );
 
         const fetchDay = lastFetch.getDay();

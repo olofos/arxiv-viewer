@@ -77,7 +77,7 @@ function parseRSS(text, category) {
     const date = xml.getElementsByTagName('dc:date')[0]?.childNodes[0]?.nodeValue;
     const items = Array.from(xml.getElementsByTagName('item'));
     const ids = items.map((item) => parseRSSItemId(item, category));
-    return { category, date, ...groupBy(ids, 'section') };
+    return { category, date, new: [], crossListed: [], updated: [], ...groupBy(ids, 'section') };
 }
 
 function parseAtom(response) {

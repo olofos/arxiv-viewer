@@ -76,7 +76,7 @@ function HeaderButtons({ navigation, item, isFavourite, toggleFavourite }) {
             <TouchableOpacity
                 onPress={() => {
                     if (browser) {
-                        Linking.openURL(`https://arxiv.org/pdf/${item.id}`);
+                        Linking.openURL(`https://arxiv.org/pdf/${item.id}.pdf`);
                     } else {
                         navigation.navigate('PDFScreen', item);
                     }

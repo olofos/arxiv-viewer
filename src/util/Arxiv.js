@@ -131,13 +131,10 @@ export default class Arxiv {
     }
 
     static fetchNew(category) {
-        const url = `http://export.arxiv.org/rss/${category}`;
+        const url = `https://export.arxiv.org/rss/${category}`;
         return fetch(url)
             .then((response) => response.text())
-            .then((response) => parseRSS(response, category))
-            .catch((error) => {
-                console.error(error);
-            });
+            .then((response) => parseRSS(response, category));
     }
 
     static fetchRecent(category, start = 0, max = 25) {
@@ -145,10 +142,7 @@ export default class Arxiv {
         const url = `https://export.arxiv.org/api/query?${query}`;
         return fetch(url)
             .then((response) => response.text())
-            .then((response) => parseAtom(response))
-            .catch((error) => {
-                console.error(error);
-            });
+            .then((response) => parseAtom(response));
     }
 
     static fetchPapersById(ids, start = 0, max = null) {
@@ -156,13 +150,9 @@ export default class Arxiv {
             const url = `https://export.arxiv.org/api/query?id_list=${ids.join(
                 ','
             )}&start=${start}&max_results=${max || ids.length}`;
-            console.log(url);
             return fetch(url)
                 .then((response) => response.text())
-                .then((response) => parseAtom(response))
-                .catch((error) => {
-                    console.error(error);
-                });
+                .then((response) => parseAtom(response));
         }
         return Promise.resolve([]);
     }
@@ -198,13 +188,9 @@ export default class Arxiv {
 
         if (queryString.length > 0) {
             const url = `https://export.arxiv.org/api/query?start=${start}&max_results=${max}${queryString}`;
-            console.log(url);
             return fetch(url)
                 .then((response) => response.text())
-                .then((response) => parseAtom(response))
-                .catch((error) => {
-                    console.error(error);
-                });
+                .then((response) => parseAtom(response));
         }
         return Promise.resolve([]);
     }

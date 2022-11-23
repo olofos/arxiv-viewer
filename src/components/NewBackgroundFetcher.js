@@ -22,7 +22,7 @@ async function sendNewNotification({ category, date, ...data }) {
         identifier: category,
         content: {
             title: `New papers from ${category}`,
-            body: `Published ${d.toDateString()}}\n${data.new.length} new papers\n${
+            body: `Published ${d.toDateString()}\n${data.new.length} new papers\n${
                 data.crossListed.length
             } cross listed papers\n${data.updated.length} updated papers`,
             data: { category, type: 'new-papers' },

@@ -23,7 +23,7 @@ export default function AboutScreen({ navigation }) {
                 </View>
                 <View className="flex-1" />
                 <View>
-                    <Text>Acknowledgements:</Text>
+                    <Text>Thank you to arXiv for use of its open access interoperability.</Text>
                 </View>
             </View>
         </View>

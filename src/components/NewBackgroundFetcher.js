@@ -35,43 +35,56 @@ async function sendNewNotification({ category, date, ...data }) {
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 
+async function fetchNewAndNotify(category) {
+    if (category === 'none') {
+        console.log('No default category set');
+        return false;
+    }
+
+    console.log(`Looking for new papers in ${category}`);
+    const lastFetch = await AsyncStorage.getItem(`fetch-new-${category}`).then(
+        (d) => new Date(d || 0)
+    );
+
+    const fetchDay = lastFetch.getDay();
+    const weekend = fetchDay === 5 ? 2 * 48 : 0;
+
+    const now = new Date(Date.now());
+
+    if (now - lastFetch < (weekend + 23) * 60 * 60 * 1000) {
+        console.log('Not yet time for new papers');
+        return false;
+    }
+
+    const result = await Arxiv.fetchNew(category);
+
+    if (!result?.date) {
+        return false;
+    }
+
+    const newDate = new Date(result.date);
+    if (newDate <= lastFetch) {
+        console.log('Not new papers yet');
+        return false;
+    }
+
+    await sendNewNotification(result);
+
+    await AsyncStorage.setItem(`fetch-new-${category}`, new Date(result.date).toISOString());
+
+    return true;
+}
+
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     try {
-        const config = await AsyncStorage.getItem('config').then((conf) =>
-            conf ? JSON.parse(conf) : { defaultCategory: 'none' }
-        );
+        const category = await AsyncStorage.getItem('config')
+            .then((conf) => (conf ? JSON.parse(conf) : { defaultCategory: 'none' }))
+            .then((conf) => conf?.defaultCategory || 'none');
 
-        const category = config?.defaultCategory || 'none';
-
-        if (category === 'none') {
-            return BackgroundFetch.BackgroundFetchResult.NoData;
+        if (await fetchNewAndNotify(category)) {
+            return BackgroundFetch.BackgroundFetchResult.NewData;
         }
-
-        const lastFetch = await AsyncStorage.getItem(`fetch-new-${category}`).then(
-            (d) => new Date(d || 0)
-        );
-
-        const fetchDay = lastFetch.getDay();
-        const weekend = fetchDay === 5 ? 2 * 48 : 0;
-
-        const now = new Date(Date.now());
-
-        if (now - lastFetch < (weekend + 23) * 60 * 60 * 1000) {
-            return BackgroundFetch.BackgroundFetchResult.NoData;
-        }
-
-        const result = await Arxiv.fetchNew(category);
-
-        const newDate = new Date(result.date);
-        if (newDate <= lastFetch) {
-            return BackgroundFetch.BackgroundFetchResult.NoData;
-        }
-
-        await sendNewNotification(result);
-
-        await AsyncStorage.setItem(`fetch-new-${category}`, new Date(result.date).toISOString());
-
-        return BackgroundFetch.BackgroundFetchResult.NewData;
+        return BackgroundFetch.BackgroundFetchResult.NoData;
     } catch (e) {
         console.error(e);
         return BackgroundFetch.BackgroundFetchResult.Failed;
@@ -98,14 +111,20 @@ export default function NewBackgroundFetcher() {
     const responseListener = useRef();
 
     const sendNotifications = useConfig('newPapersNotification');
+    const defaultCategory = useConfig('defaultCategory');
 
     useEffect(() => {
         if (sendNotifications) {
             registerBackgroundFetchAsync();
+            try {
+                fetchNewAndNotify(defaultCategory);
+            } catch (error) {
+                console.error(error);
+            }
         } else {
             unregisterBackgroundFetchAsync();
         }
-    }, [sendNotifications]);
+    }, [sendNotifications, defaultCategory]);
 
     useEffect(() => {
         responseListener.current = Notifications.addNotificationResponseReceivedListener(

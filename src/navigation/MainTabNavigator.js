@@ -1,6 +1,7 @@
 import * as React from 'react';
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import colors from 'tailwindcss/colors';
+import { useColorScheme } from 'nativewind';
 
 import TabBarIcon from '../components/TabBarIcon';
 import SettingsStack from './SettingsStack';
@@ -11,8 +12,19 @@ import FavouritesStack from './FavouritesStack';
 const Tab = createBottomTabNavigator();
 
 export default function MainTabNavigator() {
+    const { colorScheme } = useColorScheme();
+    const dark = colorScheme === 'dark';
+
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                    borderTopColor: dark ? colors.gray[800] : colors.gray[200],
+                    backgroundColor: dark ? colors.gray[800] : colors.gray[100],
+                },
+            }}
+        >
             <Tab.Screen
                 name="NewStack"
                 component={NewStack}

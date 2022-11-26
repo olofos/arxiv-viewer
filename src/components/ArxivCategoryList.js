@@ -9,15 +9,16 @@ const sectionHeaderHeight = 32;
 const itemHeight = 48;
 
 function ArxivCategoryItem({ item, mark, ...props }) {
-    const bg = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-0';
+    const bg =
+        props.index % 2 === 1 ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-0 dark:bg-gray-600';
     const pl = item.topLevel ? 'pl-4' : 'pl-2';
 
     return (
         <TouchableOpacity onPress={() => props.onPress(item)}>
             <View className={`${pl} ${bg} flex-1 flex-row`} style={{ height: itemHeight }}>
                 <View className="flex-column flex-1 justify-center">
-                    <Text className="font-semibold">{item.category}</Text>
-                    <Text className="font-base">{item.name}</Text>
+                    <Text className="font-semibold dark:text-gray-100">{item.category}</Text>
+                    <Text className="font-base dark:text-gray-100">{item.name}</Text>
                 </View>
                 <View className="flex-column justify-center pr-3">
                     {mark && <Ionicons name="checkmark" size={18} />}
@@ -57,6 +58,7 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
 
     return (
         <SectionList
+            className="bg-white dark:bg-gray-800"
             sections={sections}
             renderItem={({ item, index }) => (
                 <ArxivCategoryItem
@@ -68,10 +70,12 @@ export default function ArxivCategoryList({ defaultCategory, ...props }) {
             )}
             renderSectionHeader={({ section }) => (
                 <View
-                    className="pl-2 bg-gray-400 flex-column justify-around"
+                    className="pl-2 bg-gray-400 dark:bg-gray-800 flex-column justify-around"
                     style={{ height: sectionHeaderHeight }}
                 >
-                    <Text className="font-semibold text-base">{section.title}</Text>
+                    <Text className="font-semibold text-base dark:text-gray-100">
+                        {section.title}
+                    </Text>
                 </View>
             )}
             keyExtractor={(item, index) => index}

@@ -43,8 +43,8 @@ export default function FavouritesListScreen({ navigation }) {
     }
 
     return (
-        <View className="pl-2 pt-3">
-            <Text className="italic">
+        <View className="flex-1 pl-2 pt-3 dark:bg-gray-600">
+            <Text className="italic dark:text-gray-50">
                 {'No favourites added\n\nAdd a paper as a favourite by tapping the star icon'}
             </Text>
         </View>

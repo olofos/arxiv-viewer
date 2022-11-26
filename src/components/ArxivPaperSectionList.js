@@ -11,6 +11,7 @@ export default function ArxivPaperSectionList({ ...props }) {
 
     return (
         <SectionList
+            className="dark:bg-gray-800"
             sections={props.sections}
             renderItem={({ item, index }) => {
                 if (item.id) {
@@ -33,7 +34,9 @@ export default function ArxivPaperSectionList({ ...props }) {
                 );
             }}
             renderSectionHeader={({ section }) => (
-                <Text className="pl-2 bg-gray-400 text-lg font-semibold">{section.title}</Text>
+                <Text className="pl-2 bg-gray-400 text-lg font-semibold dark:bg-gray-800 dark:text-gray-100">
+                    {section.title}
+                </Text>
             )}
             keyExtractor={(item, index) => index}
             onEndReachedThreshold={1}

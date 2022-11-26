@@ -7,6 +7,7 @@ import ArxivPaperBrief from './ArxivPaperBrief';
 export default function ArxivPaperFlatList({ ...props }) {
     return (
         <FlatList
+            className="dark:bg-gray-800"
             data={props.data}
             renderItem={({ item, index }) => (
                 <ArxivPaperBrief

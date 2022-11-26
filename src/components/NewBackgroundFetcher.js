@@ -122,7 +122,7 @@ export default function NewBackgroundFetcher() {
                 console.error(error);
             }
         } else {
-            unregisterBackgroundFetchAsync();
+            unregisterBackgroundFetchAsync().catch(() => {});
         }
     }, [sendNotifications, defaultCategory]);
 

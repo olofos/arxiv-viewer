@@ -114,8 +114,8 @@ export default function NewBackgroundFetcher() {
     const defaultCategory = useConfig('defaultCategory');
 
     useEffect(() => {
-        if (sendNotifications) {
-            registerBackgroundFetchAsync();
+        if (sendNotifications && defaultCategory !== 'none') {
+            registerBackgroundFetchAsync().catch((err) => console.error('reg', err));
             try {
                 fetchNewAndNotify(defaultCategory);
             } catch (error) {

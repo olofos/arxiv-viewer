@@ -20,9 +20,12 @@ export default class Settings {
             .then((config) => config || defaultConfig)
             .then((config) => {
                 if (key) {
-                    return config[key];
+                    if (key in config) {
+                        return config[key];
+                    }
+                    return defaultConfig[key];
                 }
-                return config;
+                return { ...defaultConfig, ...config };
             });
     }
 

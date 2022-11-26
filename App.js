@@ -8,6 +8,7 @@ import { useColorScheme as useRNColorScheme } from 'react-native';
 
 import MainTabNavigator from './src/navigation/MainTabNavigator';
 import NewBackgroundFetcher from './src/components/NewBackgroundFetcher';
+import { useConfig } from './src/util/Settings';
 
 const Theme = {
     ...DefaultTheme,
@@ -36,13 +37,15 @@ const DarkTheme = {
 export default function App() {
     const systemColorScheme = useRNColorScheme();
     const { setColorScheme } = useColorScheme();
+    const darkMode = useConfig('darkMode');
 
+    const dark = darkMode === 'on' || (darkMode === 'system' && systemColorScheme === 'dark');
     useEffect(() => {
-        setColorScheme(systemColorScheme);
-    }, [systemColorScheme, setColorScheme]);
+        setColorScheme(dark ? 'dark' : 'light');
+    }, [setColorScheme, dark]);
 
     return (
-        <NavigationContainer theme={systemColorScheme === 'dark' ? DarkTheme : Theme}>
+        <NavigationContainer theme={dark ? DarkTheme : Theme}>
             <NewBackgroundFetcher />
             {/* eslint-disable-next-line react/style-prop-object */}
             <StatusBar style="light" />

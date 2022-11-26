@@ -9,6 +9,7 @@ const defaultConfig = {
     useMathJax: true,
     openPDFInBrowser: false,
     newPapersNotification: true,
+    darkMode: 'system',
 };
 
 const eventEmitter = new EventEmitter();

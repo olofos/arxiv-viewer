@@ -1,5 +1,15 @@
-import React, { useEffect } from 'react';
-import { View, Switch, Text, Linking, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+    View,
+    Switch,
+    Text,
+    Linking,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Alert,
+    Modal,
+    useWindowDimensions,
+} from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import colors from 'tailwindcss/colors';
@@ -67,7 +77,104 @@ function SettingsDivider() {
     return <View className="ml-2 border-b border-gray-200 dark:border-gray-500" />;
 }
 
+function SettingsSelect({ ...props }) {
+    return (
+        <TouchableOpacity
+            onPress={(arg) => props.onPress(arg)}
+            underlayColor={colors.gray[300]}
+            ref={props.innerRef}
+            collapsable={false}
+        >
+            <View className="mx-2 h-10 flex-row">
+                <Text className="self-center flex-1 text-base dark:text-gray-100">
+                    {props.title}
+                </Text>
+
+                {props.subtitle ? (
+                    <Text className="text-sm flex-0 text-gray-400 self-center">
+                        {props.subtitle}
+                    </Text>
+                ) : null}
+
+                <View className="flex-0 self-center pt-0.5 pl-1">
+                    <Ionicons name="chevron-forward" color={colors.gray[400]} size={16} />
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+}
+
+function SettingsSelectPopup({
+    visible,
+    selected,
+    options,
+    optionNames,
+    onSelect,
+    onClose,
+    position,
+}) {
+    const { height: windowHeight } = useWindowDimensions();
+    const { colorScheme } = useColorScheme();
+
+    const dark = colorScheme === 'dark';
+
+    if (!position) return null;
+
+    const [, , , height, , pageY] = position;
+    const topTop = pageY + height;
+    const bottomTop = pageY - options.length * 44;
+
+    return (
+        <Modal visible={visible} transparent statusBarTranslucent animationType="fade">
+            <TouchableWithoutFeedback
+                onPress={() => {
+                    onClose();
+                }}
+            >
+                <View className="flex-1">
+                    <TouchableWithoutFeedback>
+                        <View
+                            className="absolute right-1 bg-white border-gray-200 dark:bg-gray-600 dark:border-gray-700 border-2 px-3 rounded-xl"
+                            style={topTop < windowHeight / 2 ? { top: topTop } : { top: bottomTop }}
+                        >
+                            <View className="py-1" />
+                            {options.map((option) => (
+                                <TouchableOpacity
+                                    onPress={() => onSelect(option)}
+                                    underlayColor={colors.gray[300]}
+                                    key={option}
+                                >
+                                    <View className="flex-row py-2">
+                                        <Text
+                                            className={`flex-shrink-0 flex-grow pr-3 text-base ${
+                                                option === selected
+                                                    ? 'text-black dark:text-gray-50'
+                                                    : 'text-gray-800 dark:text-gray-300'
+                                            }`}
+                                        >
+                                            {optionNames[option]}
+                                        </Text>
+                                        {option === selected && (
+                                            <Ionicons
+                                                color={dark ? colors.gray[200] : colors.black}
+                                                name="checkmark"
+                                                size={18}
+                                            />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
+    );
+}
+
 export default function SettingsScreen({ navigation }) {
+    const [darkModeSelectState, setDarkModeSelectState] = useState(null);
+    const darkModeRef = useRef();
     const [config, setConfig] = useConfigs();
     useEffect(() => {
         navigation.setOptions({
@@ -85,8 +192,23 @@ export default function SettingsScreen({ navigation }) {
         return null;
     }
 
+    const darkModeOptions = ['system', 'on', 'off'];
+    const darkModeOptionNames = { system: 'System Default', on: 'On', off: 'Off' };
+
     return (
         <View className="bg-gray-200 dark:bg-gray-600 pt-3 flex-1">
+            <SettingsSelectPopup
+                title="Dark mode"
+                options={darkModeOptions}
+                optionNames={darkModeOptionNames}
+                selected={config.darkMode}
+                onSelect={(option) => {
+                    updateConfig('darkMode', option);
+                    setDarkModeSelectState(null);
+                }}
+                position={darkModeSelectState}
+                onClose={() => setDarkModeSelectState(null)}
+            />
             <SettingsGroup>
                 <SettingSwitch
                     onValueChange={(value) => updateConfig('useMathJax', value)}
@@ -111,11 +233,25 @@ export default function SettingsScreen({ navigation }) {
                 />
 
                 <SettingsDivider />
+
                 <SettingSwitch
                     onValueChange={(value) => updateConfig('newPapersNotification', value)}
                     value={config.defaultCategory !== 'none' && config.newPapersNotification}
                     title="Send notifications when new papers arrive"
                     disabled={config.defaultCategory === 'none'}
+                />
+
+                <SettingsDivider />
+
+                <SettingsSelect
+                    onPress={() => {
+                        darkModeRef.current.measure((x, y, width, height, pageX, pageY) => {
+                            setDarkModeSelectState([x, y, width, height, pageX, pageY]);
+                        });
+                    }}
+                    title="Dark Mode"
+                    subtitle={darkModeOptionNames[config.darkMode]}
+                    innerRef={darkModeRef}
                 />
             </SettingsGroup>
 

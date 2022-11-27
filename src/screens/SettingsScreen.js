@@ -78,11 +78,16 @@ function SettingsDivider() {
 }
 
 function SettingsSelect({ ...props }) {
+    const ref = useRef();
     return (
         <TouchableOpacity
-            onPress={(arg) => props.onPress(arg)}
+            onPress={() => {
+                ref.current.measure((x, y, width, height, pageX, pageY) => {
+                    props.setState({ x, y, width, height, pageX, pageY });
+                });
+            }}
             underlayColor={colors.gray[300]}
-            ref={props.innerRef}
+            ref={ref}
             collapsable={false}
         >
             <View className="mx-2 h-10 flex-row">
@@ -104,33 +109,21 @@ function SettingsSelect({ ...props }) {
     );
 }
 
-function SettingsSelectPopup({
-    visible,
-    selected,
-    options,
-    optionNames,
-    onSelect,
-    onClose,
-    position,
-}) {
+function SettingsSelectPopup({ selected, options, optionNames, onSelect, setState, state }) {
     const { height: windowHeight } = useWindowDimensions();
     const { colorScheme } = useColorScheme();
 
     const dark = colorScheme === 'dark';
 
-    if (!position) return null;
+    if (!state) return null;
 
-    const [, , , height, , pageY] = position;
+    const { height, pageY } = state;
     const topTop = pageY + height;
     const bottomTop = pageY - options.length * 44;
 
     return (
-        <Modal visible={visible} transparent statusBarTranslucent animationType="fade">
-            <TouchableWithoutFeedback
-                onPress={() => {
-                    onClose();
-                }}
-            >
+        <Modal transparent statusBarTranslucent animationType="fade">
+            <TouchableWithoutFeedback onPress={() => setState(undefined)}>
                 <View className="flex-1">
                     <TouchableWithoutFeedback>
                         <View
@@ -140,7 +133,10 @@ function SettingsSelectPopup({
                             <View className="py-1" />
                             {options.map((option) => (
                                 <TouchableOpacity
-                                    onPress={() => onSelect(option)}
+                                    onPress={() => {
+                                        setState(undefined);
+                                        onSelect(option);
+                                    }}
                                     underlayColor={colors.gray[300]}
                                     key={option}
                                 >
@@ -173,8 +169,7 @@ function SettingsSelectPopup({
 }
 
 export default function SettingsScreen({ navigation }) {
-    const [darkModeSelectState, setDarkModeSelectState] = useState(null);
-    const darkModeRef = useRef();
+    const [darkModeSelectState, setDarkModeSelectState] = useState();
     const [config, setConfig] = useConfigs();
     useEffect(() => {
         navigation.setOptions({
@@ -202,12 +197,9 @@ export default function SettingsScreen({ navigation }) {
                 options={darkModeOptions}
                 optionNames={darkModeOptionNames}
                 selected={config.darkMode}
-                onSelect={(option) => {
-                    updateConfig('darkMode', option);
-                    setDarkModeSelectState(null);
-                }}
-                position={darkModeSelectState}
-                onClose={() => setDarkModeSelectState(null)}
+                onSelect={(option) => updateConfig('darkMode', option)}
+                state={darkModeSelectState}
+                setState={setDarkModeSelectState}
             />
             <SettingsGroup>
                 <SettingSwitch
@@ -244,14 +236,9 @@ export default function SettingsScreen({ navigation }) {
                 <SettingsDivider />
 
                 <SettingsSelect
-                    onPress={() => {
-                        darkModeRef.current.measure((x, y, width, height, pageX, pageY) => {
-                            setDarkModeSelectState([x, y, width, height, pageX, pageY]);
-                        });
-                    }}
+                    setState={setDarkModeSelectState}
                     title="Dark Mode"
                     subtitle={darkModeOptionNames[config.darkMode]}
-                    innerRef={darkModeRef}
                 />
             </SettingsGroup>
 
